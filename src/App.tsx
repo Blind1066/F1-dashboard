@@ -1,8 +1,9 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { TopBar } from "./components/TopBar";
-import { Standings } from "./pages/Standings";
+import { Home } from "./pages/Home";
 import { Schedule } from "./pages/Schedule";
+import { Standings } from "./pages/Standings";
 import { News } from "./pages/News";
 import { Live } from "./pages/Live";
 import { Telemetry } from "./pages/Telemetry";
@@ -12,8 +13,8 @@ export const App: React.FC = () => {
     <>
       <TopBar />
       <Routes>
-        <Route path="/" element={<Schedule />} />
-        <Route path="/schedule" element={<Navigate to="/" replace />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/schedule" element={<Schedule />} />
         <Route path="/standings" element={<Standings />} />
         <Route path="/news" element={<News />} />
         <Route path="/live" element={<Live />} />

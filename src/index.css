@@ -738,3 +738,826 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: var(--muted);
 }
 
+
+/* ==========================================================================
+   Home Page: Upcoming Track & Next 3 Races Big Tiles
+   ========================================================================== */
+
+.home-wrap {
+  padding-top: 16px;
+  padding-bottom: 48px;
+}
+
+/* Season Overview Status Bar */
+.season-overview-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+}
+
+.season-overview-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.season-badge {
+  background: var(--accent);
+  color: #ffffff;
+  font: 700 12px var(--display);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.season-progress-label {
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.season-pct {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.season-progress-bar-container {
+  flex: 1;
+  min-width: 140px;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.season-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ff5c5c);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.season-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.overview-pill-link {
+  font: 600 12px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.overview-pill-link:hover {
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-2));
+  border-color: var(--accent);
+}
+
+.overview-pill-link.highlight {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+
+/* --------------------------------------------------------------------------
+   Upcoming Track Hero Showcase
+   -------------------------------------------------------------------------- */
+.upcoming-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, var(--surface)) 0%, var(--surface) 60%);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-left: 6px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 36px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.upcoming-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.upcoming-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border: 1px solid var(--accent);
+  border-radius: 99px;
+  font: 700 12px var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.live-radar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: pulse 1.4s infinite;
+}
+
+.upcoming-flag-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upcoming-country-text {
+  font: 600 13px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.upcoming-header-main {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.upcoming-hero-title {
+  margin: 0;
+  font: 700 clamp(28px, 4.5vw, 42px)/1.05 var(--display);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--text);
+}
+
+.upcoming-circuit-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.circuit-name-text {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.meta-sep {
+  opacity: 0.5;
+}
+
+.upcoming-tab-buttons {
+  display: flex;
+  gap: 6px;
+  background: var(--surface-2);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+
+.tab-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font: 600 13px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.upcoming-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .upcoming-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.upcoming-left-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font: 700 13px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s ease;
+}
+
+.track-action-btn:hover {
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-2));
+  border-color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Track Blueprint Component
+   -------------------------------------------------------------------------- */
+.track-blueprint-container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.track-blueprint-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.track-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 12px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.track-metrics-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 12px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.track-svg-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 500 / 330;
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--accent) 5%, var(--surface-2)) 0%, var(--surface-2) 80%);
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-hero-svg {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+}
+
+.track-compass {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font: 700 11px var(--display);
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.track-specs-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 600px) {
+  .track-specs-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.track-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spec-label {
+  font: 600 11px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.spec-val {
+  font: 700 20px/1.1 var(--display);
+  color: var(--text);
+}
+
+.spec-unit {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.spec-val.record {
+  color: #c084fc;
+}
+
+.spec-sub {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Next 3 Races: Big Tiles Section
+   -------------------------------------------------------------------------- */
+.next-races-section {
+  margin-bottom: 40px;
+}
+
+.section-title-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.section-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 12px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.racing-stripe {
+  width: 14px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.section-heading {
+  margin: 0;
+  font: 700 clamp(24px, 3.5vw, 32px)/1 var(--display);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text);
+}
+
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 13px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: all 0.15s ease;
+}
+
+.view-all-link:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.big-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .big-tiles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.big-race-tile {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.big-race-tile:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.tile-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tile-round-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  font: 700 12px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tile-order-num {
+  color: var(--accent);
+}
+
+.tile-flag-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.race-flag-img-sm {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.tile-country {
+  font: 600 12px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+.tile-header {
+  margin-bottom: 14px;
+}
+
+.tile-title {
+  margin: 0 0 6px 0;
+  font: 700 22px/1.15 var(--display);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--text);
+  min-height: 48px;
+}
+
+.tile-venue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tile-venue-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile-city {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.tile-track-preview {
+  width: 100%;
+  aspect-ratio: 500 / 260;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin-bottom: 16px;
+}
+
+.track-mini-svg-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-mini-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tile-stats-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 8px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+
+.tile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.stat-label {
+  font: 600 10px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.stat-val {
+  font: 700 15px/1 var(--display);
+  color: var(--text);
+}
+
+.tile-stat-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+}
+
+.tile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.tile-timing-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tile-date-label {
+  font: 600 10px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.tile-date-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tile-countdown-pill {
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  white-space: nowrap;
+}
+
+.tile-action-row {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.tile-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font: 700 12px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.tile-btn:hover {
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-2));
+  border-color: var(--accent);
+}
+
+.tile-btn.sessions-btn.active {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tile-btn.full-btn {
+  flex: 0 0 auto;
+}
+
+.tile-expanded-sessions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.tile-sess-head {
+  display: flex;
+  justify-content: space-between;
+  font: 600 10px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.tile-sess-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.tile-sess-item.main {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+  font-weight: 700;
+}
+
+.sess-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.tile-sess-item.main .sess-time {
+  color: var(--text);
+}
+
+/* --------------------------------------------------------------------------
+   Home Dashboard CTAs
+   -------------------------------------------------------------------------- */
+.home-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .home-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-card-cta {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  transition: border-color 0.15s ease;
+}
+
+.home-card-cta:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+
+.cta-icon {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cta-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cta-title {
+  margin: 0;
+  font: 700 20px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text);
+}
+
+.cta-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.cta-link-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font: 700 12px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.cta-link-btn:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}

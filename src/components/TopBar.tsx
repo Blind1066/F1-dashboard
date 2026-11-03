@@ -41,6 +41,12 @@ export const TopBar: React.FC = () => {
               end
               className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
             >
+              Home
+            </NavLink>
+            <NavLink
+              to="/schedule"
+              className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
+            >
               Race Schedule
             </NavLink>
             <NavLink
