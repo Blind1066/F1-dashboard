@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Alfa Romeo Emblem -->
+  <circle cx="50" cy="50" r="46" fill="#002347" stroke="#C9A24B" stroke-width="2.5"/>
+  <circle cx="50" cy="50" r="36" fill="#FFFFFF"/>
+  <!-- Left Half: Red Cross of Milan -->
+  <clipPath id="left-half">
+    <rect x="14" y="14" width="36" height="72"/>
+  </clipPath>
+  <g clip-path="url(#left-half)">
+    <rect x="29" y="14" width="8" height="72" fill="#B12039"/>
+    <rect x="14" y="46" width="38" height="8" fill="#B12039"/>
+  </g>
+  <!-- Right Half: Green Biscione Serpent -->
+  <path d="M50 14 L50 86" stroke="#C9A24B" stroke-width="1.5"/>
+  <path d="M60 28 C64 28 68 31 68 35 C68 39 63 41 60 43 C56 45 54 48 54 53 C54 57 58 60 62 61 C67 62 70 65 70 70 C70 74 66 77 62 77" fill="none" stroke="#007A3D" stroke-width="6" stroke-linecap="round"/>
+  <!-- Gold Crown -->
+  <polygon points="56,24 64,24 63,20 60,22 57,20" fill="#C9A24B"/>
+</svg>
