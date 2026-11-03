@@ -18,7 +18,6 @@ Powered by the [Jolpica F1 API](https://github.com/jolpica/jolpica-f1), [OpenF1 
 
 ### Development
 ```bash
-cd pitwall-react
 npm install
 npm run dev
 ```
@@ -26,9 +25,41 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ### Production Build
 ```bash
-cd pitwall-react
 npm run build
 npm run preview
+```
+
+---
+
+## Deploying on Vercel
+
+The repository is configured out-of-the-box for production deployment on [Vercel](https://vercel.com):
+
+* **Framework Preset**: Vite
+* **Build Command**: `npm run build`
+* **Output Directory**: `dist`
+* **SPA Routing**: Handled via `vercel.json` rewrites (prevents 404s on direct navigation or page refresh)
+* **Caching & CDN Headers**: Pre-configured long-term immutable caching for static assets and immediate revalidation for HTML
+
+### Option 1: Deploy via GitHub (Recommended)
+1. Push your latest code to GitHub:
+   ```bash
+   git add .
+   git commit -m "Configure Vercel deployment and optimize assets"
+   git push origin master
+   ```
+2. Log into [vercel.com](https://vercel.com) and click **"Add New..." → "Project"**.
+3. Import your **`F1-dashboard`** repository.
+4. Vercel will automatically detect `vite` and the settings from `vercel.json`.
+5. Click **Deploy**.
+
+### Option 2: Deploy via Vercel CLI
+```bash
+npx vercel
+```
+To deploy straight to production:
+```bash
+npx vercel --prod
 ```
 
 ---

@@ -71,25 +71,25 @@ export function colourFor(id: string): string {
 }
 
 export const TEAM_LOGOS: Record<string, string> = {
-  mclaren: "assets/logos/mclaren.svg",
-  ferrari: "assets/logos/ferrari.svg",
-  red_bull: "assets/logos/red_bull.svg",
-  mercedes: "assets/logos/mercedes.svg",
-  aston_martin: "assets/logos/aston_martin.svg",
-  alpine: "assets/logos/alpine.svg",
-  haas: "assets/logos/haas.svg",
-  rb: "assets/logos/rb.svg",
-  alphatauri: "assets/logos/alphatauri.svg",
-  toro_rosso: "assets/logos/toro_rosso.svg",
-  williams: "assets/logos/williams.svg",
-  sauber: "assets/logos/sauber.svg",
-  alfa: "assets/logos/alfa.svg",
-  renault: "assets/logos/renault.svg",
-  racing_point: "assets/logos/racing_point.svg",
-  force_india: "assets/logos/force_india.svg",
-  audi: "assets/logos/audi.svg",
-  cadillac: "assets/logos/cadillac.svg",
-  lotus_f1: "assets/logos/lotus_f1.svg",
+  mclaren: "/assets/logos/mclaren.svg",
+  ferrari: "/assets/logos/ferrari.svg",
+  red_bull: "/assets/logos/red_bull.svg",
+  mercedes: "/assets/logos/mercedes.svg",
+  aston_martin: "/assets/logos/aston_martin.svg",
+  alpine: "/assets/logos/alpine.svg",
+  haas: "/assets/logos/haas.svg",
+  rb: "/assets/logos/rb.svg",
+  alphatauri: "/assets/logos/alphatauri.svg",
+  toro_rosso: "/assets/logos/toro_rosso.svg",
+  williams: "/assets/logos/williams.svg",
+  sauber: "/assets/logos/sauber.svg",
+  alfa: "/assets/logos/alfa.svg",
+  renault: "/assets/logos/renault.svg",
+  racing_point: "/assets/logos/racing_point.svg",
+  force_india: "/assets/logos/force_india.svg",
+  audi: "/assets/logos/audi.svg",
+  cadillac: "/assets/logos/cadillac.svg",
+  lotus_f1: "/assets/logos/lotus_f1.svg",
 };
 
 export function logoFor(id?: string, name?: string): string {
@@ -118,14 +118,14 @@ export function logoFor(id?: string, name?: string): string {
 }
 
 export const DRIVER_HEADSHOTS: Record<string, string> = {
-  LIN: "assets/headshots/lindblad.jpg",
-  arvid_lindblad: "assets/headshots/lindblad.jpg",
-  OCO: "assets/headshots/ocon.jpg",
-  ocon: "assets/headshots/ocon.jpg",
-  TSU: "assets/headshots/tsunoda.jpg",
-  tsunoda: "assets/headshots/tsunoda.jpg",
-  HIR: "assets/headshots/hirakawa.jpg",
-  ryo_hirakawa: "assets/headshots/hirakawa.jpg",
+  LIN: "/assets/headshots/lindblad.jpg",
+  arvid_lindblad: "/assets/headshots/lindblad.jpg",
+  OCO: "/assets/headshots/ocon.jpg",
+  ocon: "/assets/headshots/ocon.jpg",
+  TSU: "/assets/headshots/tsunoda.jpg",
+  tsunoda: "/assets/headshots/tsunoda.jpg",
+  HIR: "/assets/headshots/hirakawa.jpg",
+  ryo_hirakawa: "/assets/headshots/hirakawa.jpg",
 };
 
 export function headshotFor(code?: string, id?: string, name?: string): string {
