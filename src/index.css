@@ -1047,12 +1047,21 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: var(--text);
 }
 
+.track-view-modes-pill-group {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface-2);
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
 .track-view-toggle-pill {
   padding: 3px 8px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-  color: var(--accent);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
   font: 700 10px var(--display);
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1061,9 +1070,83 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 
 .track-view-toggle-pill:hover {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--text);
+}
+
+.track-view-toggle-pill.active {
   background: var(--accent);
   color: #ffffff;
   border-color: var(--accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* Track Sectors Legend Bar */
+.track-sectors-legend {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(14, 16, 22, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  pointer-events: none;
+}
+
+@media (max-width: 680px) {
+  .track-sectors-legend {
+    display: none;
+  }
+}
+
+.sector-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.leg-color-bar {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.leg-color-bar.red {
+  background: #ff3b30;
+  box-shadow: 0 0 6px rgba(255, 59, 48, 0.7);
+}
+
+.leg-color-bar.blue {
+  background: #0080ff;
+  box-shadow: 0 0 6px rgba(0, 128, 255, 0.7);
+}
+
+.leg-color-bar.yellow {
+  background: #ffcc00;
+  box-shadow: 0 0 6px rgba(255, 204, 0, 0.7);
+}
+
+.leg-name {
+  font: 700 10px var(--display);
+  letter-spacing: .08em;
+  color: var(--text);
+}
+
+.leg-desc {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.turn-label-pin {
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
 }
 
 .track-svg-canvas {
