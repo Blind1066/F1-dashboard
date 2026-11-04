@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSchedule } from "../api/jolpica";
 import { getDemoSchedule } from "../api/demo";
 import type { ScheduleRace } from "../types";
-import { Hero } from "../components/Hero";
-import { LiveRaceTiming } from "../components/LiveRaceTiming";
+import { LiveInteractiveDashboard } from "../components/LiveInteractiveDashboard";
 import { SkeletonRows } from "../components/Skeleton";
 
 export const Live: React.FC = () => {
@@ -21,12 +20,10 @@ export const Live: React.FC = () => {
 
   if (isLoading && races.length === 0) {
     return (
-      <main className="wrap">
-        <Hero
-          eyebrow="Formula 1 Pitwall"
-          title="Live Race Timing & Telemetry"
-          statusLine="Connecting to telemetry stream…"
-        />
+      <main className="wrap" style={{ padding: "32px 16px" }}>
+        <h1 style={{ font: "700 28px var(--display)", textTransform: "uppercase" }}>
+          Connecting to Formula 1 Telemetry Stream…
+        </h1>
         <div style={{ marginTop: "24px", display: "grid", gap: "12px" }}>
           <SkeletonRows count={8} />
         </div>
@@ -35,16 +32,8 @@ export const Live: React.FC = () => {
   }
 
   return (
-    <main className="wrap live-page-wrap">
-      <Hero
-        eyebrow="Formula 1 Pitwall Telemetry"
-        title={upcomingRace ? `${upcomingRace.name} — Live Timing` : "Live Race Timing"}
-        statusLine={upcomingRace ? `Live sector times, driver positions, intervals, tyre stints & fastest laps at ${upcomingRace.circuit.name}.` : "Live timing stream"}
-      />
-
-      <section style={{ marginTop: "24px", marginBottom: "40px" }}>
-        <LiveRaceTiming race={upcomingRace} />
-      </section>
-    </main>
+    <div className="fullscreen-pitwall-page">
+      <LiveInteractiveDashboard race={upcomingRace} />
+    </div>
   );
 };

@@ -2299,3 +2299,900 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
+
+/* ==========================================================================
+   Fullscreen Pitwall: F1 TV Live Driver Tracker & Cockpit Telemetry
+   ========================================================================== */
+
+.fullscreen-pitwall-page {
+  width: 100%;
+  min-height: calc(100vh - 58px);
+  background: #090a0d;
+}
+
+.f1-pitwall-fullscreen-window {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 58px);
+  background: #0a0b0f;
+  color: #f1f2f5;
+  font-family: var(--body);
+  user-select: none;
+}
+
+/* 1. TOP RED F1 BAR */
+.f1-top-red-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  background: #e10600;
+  padding: 0 18px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.f1-logo-badge {
+  font: 900 22px/1 var(--display);
+  letter-spacing: .06em;
+  padding: 3px 8px;
+  background: #000000;
+  color: #ffffff;
+  border-radius: 4px;
+  transform: skewX(-12deg);
+}
+
+.f1-logo-badge span {
+  display: inline-block;
+  transform: skewX(12deg);
+}
+
+.f1-event-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-location {
+  font: 700 15px/1.1 var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.event-session {
+  font: 600 11px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* Center Navigation Tabs (Leaderboard, Driver Tracker, Commentary) */
+.f1-center-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .f1-center-nav-tabs {
+    display: none;
+  }
+}
+
+.nav-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  background: transparent;
+  border: 0;
+  color: #ffffff;
+  font: 700 13px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-tab-btn:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.nav-tab-btn.active {
+  background: #ffffff;
+  color: #e10600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-action-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 0;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.icon-action-btn:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.icon-action-btn.close-btn:hover {
+  background: #000000;
+}
+
+/* 2. SUB-HEADER BAR */
+.f1-sub-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  background: #13151c;
+  border-bottom: 1px solid #232733;
+  padding: 0 18px;
+  flex-shrink: 0;
+}
+
+.sub-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e10600;
+  color: #ffffff;
+  font: 700 11px var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.session-flag-tag {
+  font: 700 11px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #3ecf8e;
+}
+
+.sub-header-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sub-tab-btn {
+  padding: 6px 14px;
+  background: transparent;
+  border: 0;
+  color: #8b92a0;
+  font: 600 13px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.sub-tab-btn:hover {
+  color: #ffffff;
+}
+
+.sub-tab-btn.active {
+  color: #ffffff;
+  border-bottom-color: #e10600;
+}
+
+/* 3. MAIN INTERACTIVE BODY */
+.f1-pitwall-main-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background: #0a0b0f;
+  position: relative;
+}
+
+.tracker-split-layout {
+  display: grid;
+  grid-template-columns: 410px 1fr;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .tracker-split-layout {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+/* Left Section: Vertical Ladder + Cockpit HUD */
+.tracker-left-panel {
+  display: flex;
+  background: #111319;
+  border-right: 1px solid #202430;
+  overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .tracker-left-panel {
+    border-right: 0;
+    border-bottom: 1px solid #202430;
+  }
+}
+
+/* Vertical Position Ladder (P1 to P20) */
+.vertical-position-ladder {
+  width: 82px;
+  background: #0e1015;
+  border-right: 1px solid #1c202a;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.v-ladder-header {
+  padding: 10px 6px;
+  font: 700 10px var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #646a78;
+  text-align: center;
+  border-bottom: 1px solid #1c202a;
+}
+
+.v-ladder-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.v-ladder-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 6px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #171a22;
+  color: #f1f2f5;
+  cursor: pointer;
+  transition: background 0.12s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.v-ladder-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.v-ladder-item.active-driver {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.v-ladder-item.active-driver .v-pos,
+.v-ladder-item.active-driver .v-code {
+  color: #000000 !important;
+  font-weight: 800;
+}
+
+.v-pos {
+  font: 700 12px var(--display);
+  color: #8b92a0;
+  width: 16px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.v-team-stripe {
+  width: 3.5px;
+  height: 14px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.v-code {
+  font: 700 12px var(--display);
+  letter-spacing: .06em;
+  color: #f1f2f5;
+  flex: 1;
+}
+
+.v-delta {
+  font-size: 10px;
+  width: 12px;
+  text-align: center;
+}
+
+.delta-up {
+  color: #3ecf8e;
+}
+
+.delta-down {
+  color: #ff5c5c;
+}
+
+.delta-neutral {
+  color: #646a78;
+}
+
+/* Driver Cockpit HUD Panel */
+.driver-cockpit-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  overflow-y: auto;
+  gap: 14px;
+  background: #12141c;
+}
+
+.cockpit-driver-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #202430;
+}
+
+.cdh-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cdh-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.cdh-code {
+  font: 700 20px/1 var(--display);
+  letter-spacing: .06em;
+  color: #ffffff;
+}
+
+.cdh-team {
+  font: 600 12px var(--display);
+  text-transform: uppercase;
+}
+
+.cdh-pos-badge {
+  font-size: 11px;
+  color: #8b92a0;
+  margin-top: 2px;
+}
+
+.cdh-right-best {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.cdh-best-lap {
+  font: 700 13px var(--display);
+  color: #c084fc;
+  font-variant-numeric: tabular-nums;
+}
+
+.cdh-tyre-badge {
+  font: 700 10px var(--display);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.4);
+}
+
+/* Cockpit Circular Gauge Styling */
+.cockpit-gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.gauge-dial-wrap {
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gauge-sectors-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #0e1017;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #202430;
+}
+
+.gst-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.gst-row.best {
+  border-top: 1px solid #202430;
+  padding-top: 5px;
+  margin-top: 3px;
+}
+
+.gst-label {
+  font: 600 10px var(--display);
+  letter-spacing: .08em;
+  color: #8b92a0;
+  text-transform: uppercase;
+}
+
+.gst-val {
+  font: 700 13px var(--display);
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.gst-val.purple {
+  color: #c084fc;
+}
+
+/* Battle Mode Button & Comparison */
+.battle-mode-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.battle-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(225, 6, 0, 0.25), rgba(225, 6, 0, 0.1));
+  border: 1.5px solid #e10600;
+  border-radius: 99px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.battle-mode-btn:hover,
+.battle-mode-btn.active {
+  background: #e10600;
+  box-shadow: 0 0 16px rgba(225, 6, 0, 0.5);
+}
+
+.battle-icon-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e10600;
+  color: #ffffff;
+  font: 800 10px/22px var(--display);
+  text-align: center;
+}
+
+.battle-mode-btn.active .battle-icon-badge {
+  background: #ffffff;
+  color: #e10600;
+}
+
+.battle-btn-text {
+  font: 700 12px var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.battle-mode-compare-box {
+  background: #0e1017;
+  border: 1px solid #e10600;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.battle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 700 11px var(--display);
+  letter-spacing: .08em;
+  color: #e10600;
+}
+
+.battle-select {
+  background: #181b24;
+  border: 1px solid #282d3c;
+  color: #ffffff;
+  font: 600 11px var(--display);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.battle-stats-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.battle-driver {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.battle-driver.a {
+  text-align: left;
+}
+
+.battle-driver.b {
+  text-align: right;
+}
+
+.bd-name {
+  font: 700 16px var(--display);
+}
+
+.bd-speed {
+  font: 700 13px var(--display);
+  color: #ffffff;
+}
+
+.bd-time {
+  font: 600 11px var(--display);
+  color: #8b92a0;
+}
+
+.battle-vs-badge {
+  font: 900 14px var(--display);
+  color: #e10600;
+}
+
+/* --------------------------------------------------------------------------
+   RIGHT SECTION: 2D LIVE DRIVER TRACKER MAP
+   -------------------------------------------------------------------------- */
+.tracker-map-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #151822 0%, #0c0d12 85%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-overlay-controls {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+}
+
+.map-compass {
+  width: 32px;
+  height: 32px;
+  background: rgba(18, 20, 27, 0.85);
+  border: 1px solid #2b3040;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 10px var(--display);
+  color: #8b92a0;
+}
+
+.map-ctrl-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(18, 20, 27, 0.85);
+  border: 1px solid #2b3040;
+  border-radius: 6px;
+  color: #ffffff;
+  font: 700 14px var(--display);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.map-ctrl-btn:hover {
+  background: #252a38;
+  border-color: #e10600;
+}
+
+.map-ctrl-btn.speed-btn {
+  font-size: 11px;
+  color: #ffd000;
+}
+
+.track-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.brasil-interactive-svg {
+  width: 95%;
+  height: 95%;
+  max-width: 980px;
+}
+
+/* Driver blips & Beacon */
+.driver-blip-node {
+  transition: transform 0.08s linear;
+}
+
+.beacon-pulse {
+  animation: beaconPulse 1.4s infinite;
+}
+
+@keyframes beaconPulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.35); opacity: 0.2; }
+  100% { transform: scale(0.8); opacity: 0.8; }
+}
+
+.turn-node {
+  pointer-events: none;
+}
+
+/* 4. FULLSCREEN LEADERBOARD & COMMENTARY TABS */
+.fullscreen-leaderboard-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.f1-leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.f1-leaderboard-table th {
+  padding: 10px 14px;
+  background: #141720;
+  color: #8b92a0;
+  font: 700 11px var(--display);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #232733;
+}
+
+.f1-leaderboard-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #1a1d26;
+  vertical-align: middle;
+}
+
+.lb-row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.lb-row:hover {
+  background: rgba(225, 6, 0, 0.08);
+}
+
+.lb-row.selected {
+  background: rgba(225, 6, 0, 0.15);
+  border-left: 3px solid #e10600;
+}
+
+.pos-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  font: 700 12px var(--display);
+  background: #181b24;
+  color: #ffffff;
+}
+
+.pos-pill.pos-1 { background: #f59e0b; color: #000; }
+.pos-pill.pos-2 { background: #94a3b8; color: #000; }
+.pos-pill.pos-3 { background: #b45309; color: #fff; }
+
+.lb-driver-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lb-code {
+  display: block;
+  font: 600 11px var(--display);
+  color: #8b92a0;
+}
+
+.lb-team-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-indicator {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.lb-gap {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-speed, .lb-gear {
+  font-variant-numeric: tabular-nums;
+  color: #8b92a0;
+}
+
+.lb-best-lap {
+  font: 700 13px var(--display);
+  color: #c084fc;
+  font-variant-numeric: tabular-nums;
+}
+
+.tyre-tag {
+  font: 700 10px var(--display);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.tyre-tag.soft { background: rgba(255, 59, 48, 0.2); color: #ff3b30; }
+.tyre-tag.medium { background: rgba(255, 208, 0, 0.2); color: #ffd000; }
+.tyre-tag.hard { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+
+/* Commentary View */
+.fullscreen-commentary-view {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comm-title {
+  margin: 0;
+  font: 700 22px var(--display);
+  text-transform: uppercase;
+  color: #e10600;
+  border-bottom: 1px solid #232733;
+  padding-bottom: 12px;
+}
+
+.comm-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comm-item {
+  display: flex;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #13151c;
+  border-radius: 8px;
+  border: 1px solid #232733;
+}
+
+.comm-lap-tag {
+  font: 700 12px var(--display);
+  color: #e10600;
+  flex-shrink: 0;
+}
+
+.comm-text {
+  font-size: 14px;
+  color: #e1e4ea;
+  line-height: 1.4;
+}
+
+/* 5. BOTTOM TELEMETRY BAR */
+.f1-bottom-telemetry-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  background: #0d0e14;
+  border-top: 1px solid #202430;
+  padding: 0 18px;
+  font-size: 12px;
+  color: #8b92a0;
+  flex-shrink: 0;
+}
+
+.f1-bot-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bot-session-clock {
+  font: 700 12px var(--display);
+  letter-spacing: .06em;
+  color: #ffffff;
+}
+
+.bot-session-clock strong {
+  color: #e10600;
+}
+
+.bot-timer {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+}
+
+.f1-bot-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.f1-bot-center strong {
+  color: #ffffff;
+}
+
+.f1-bot-right {
+  display: flex;
+  align-items: center;
+}
+
+.rolex-watermark {
+  font: 800 11px var(--display);
+  letter-spacing: .12em;
+  color: #4a5060;
+  text-transform: uppercase;
+}
