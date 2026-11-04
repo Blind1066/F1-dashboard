@@ -62,6 +62,7 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isWideTrack, setIsWideTrack] = useState(true);
 
   // Lap State
   const [currentLap] = useState(48);
@@ -356,7 +357,7 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
       <div className="f1-pitwall-main-body">
         {/* VIEW 1: DRIVER TRACKER & COCKPIT HUD (Default) */}
         {topTab === "tracker" && (
-          <div className="tracker-split-layout">
+          <div className={`tracker-split-layout${isWideTrack ? " wide-track" : ""}`}>
             {/* LEFT SECTION: Vertical Ladder & Cockpit HUD */}
             <div className="tracker-left-panel">
               {/* Vertical Position Strip (P1 to P20) */}
@@ -517,6 +518,14 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
                   title="Simulation Speed Multiplier"
                 >
                   {speedMultiplier}x
+                </button>
+                <button
+                  type="button"
+                  className={`map-ctrl-btn${isWideTrack ? " active" : ""}`}
+                  onClick={() => setIsWideTrack((w) => !w)}
+                  title={isWideTrack ? "Reset to Standard View" : "Make Track Section Wide"}
+                >
+                  <span>{isWideTrack ? "⛶" : "↔"}</span>
                 </button>
               </div>
 

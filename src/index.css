@@ -2580,10 +2580,15 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .tracker-split-layout {
   display: grid;
-  grid-template-columns: 410px 1fr;
+  grid-template-columns: 290px 1fr;
   width: 100%;
   height: 100%;
   overflow: hidden;
+  transition: grid-template-columns 0.25s ease;
+}
+
+.tracker-split-layout.wide-track {
+  grid-template-columns: 250px 1fr;
 }
 
 @media (max-width: 960px) {
@@ -2610,7 +2615,7 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Vertical Position Ladder (P1 to P20) */
 .vertical-position-ladder {
-  width: 82px;
+  width: 68px;
   background: #0e1015;
   border-right: 1px solid #1c202a;
   display: flex;
@@ -2710,9 +2715,9 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 14px 16px;
+  padding: 10px 12px;
   overflow-y: auto;
-  gap: 14px;
+  gap: 10px;
   background: #12141c;
 }
 
@@ -2720,14 +2725,14 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid #202430;
 }
 
 .cdh-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .cdh-name-row {
@@ -2737,13 +2742,13 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 
 .cdh-code {
-  font: 700 20px/1 var(--display);
+  font: 700 18px/1 var(--display);
   letter-spacing: .06em;
   color: #ffffff;
 }
 
 .cdh-team {
-  font: 600 12px var(--display);
+  font: 600 11px var(--display);
   text-transform: uppercase;
 }
 
@@ -2761,7 +2766,7 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 
 .cdh-best-lap {
-  font: 700 13px var(--display);
+  font: 700 12px var(--display);
   color: #c084fc;
   font-variant-numeric: tabular-nums;
 }
@@ -2780,12 +2785,12 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .gauge-dial-wrap {
-  width: 200px;
-  height: 200px;
+  width: 175px;
+  height: 175px;
   position: relative;
 }
 
