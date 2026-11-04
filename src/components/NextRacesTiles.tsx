@@ -61,7 +61,10 @@ export const NextRacesTiles: React.FC<NextRacesTilesProps> = ({
           const daysText = getDaysUntil(race.raceTimes.date);
 
           return (
-            <article key={race.round} className="big-race-tile">
+            <article
+              key={race.round}
+              className={`big-race-tile${isExpanded ? " expanded" : ""}`}
+            >
               {/* Top Banner: Round badge & Flag & Date */}
               <div className="tile-top-bar">
                 <div className="tile-round-chip">
