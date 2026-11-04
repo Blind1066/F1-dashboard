@@ -174,23 +174,23 @@ export const TrackBlueprint: React.FC<TrackBlueprintProps> = ({
 
           {/* Grid lines background decoration */}
           <g className="track-grid-pattern" opacity="0.08">
-            <line x1="50" y1="0" x2="50" y2="320" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="150" y1="0" x2="150" y2="320" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="250" y1="0" x2="250" y2="320" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="350" y1="0" x2="350" y2="320" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="450" y1="0" x2="450" y2="320" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="0" y1="80" x2="500" y2="80" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="0" y1="160" x2="500" y2="160" stroke="currentColor" strokeDasharray="3 3" />
-            <line x1="0" y1="240" x2="500" y2="240" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="50" y1="-10" x2="50" y2="340" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="150" y1="-10" x2="150" y2="340" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="250" y1="-10" x2="250" y2="340" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="350" y1="-10" x2="350" y2="340" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="450" y1="-10" x2="450" y2="340" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="-10" y1="80" x2="510" y2="80" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="-10" y1="160" x2="510" y2="160" stroke="currentColor" strokeDasharray="3 3" />
+            <line x1="-10" y1="240" x2="510" y2="240" stroke="currentColor" strokeDasharray="3 3" />
           </g>
 
           {viewMode === "map" && circuit.id === "interlagos" ? (
             <image
               href="/assets/circuits/brazil_circuit.png"
-              x="20"
-              y="10"
-              width="460"
-              height="300"
+              x="10"
+              y="0"
+              width="480"
+              height="320"
               preserveAspectRatio="xMidYMid meet"
             />
           ) : (

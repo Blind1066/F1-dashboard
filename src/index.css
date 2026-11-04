@@ -1152,7 +1152,7 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .track-svg-canvas {
   position: relative;
   width: 100%;
-  aspect-ratio: 500 / 330;
+  aspect-ratio: 520 / 350;
   background: radial-gradient(circle at center, color-mix(in srgb, var(--accent) 5%, var(--surface-2)) 0%, var(--surface-2) 80%);
   border-radius: 10px;
   border: 1px solid var(--line);
