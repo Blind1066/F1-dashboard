@@ -1,24 +1,50 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getSchedule } from "../api/jolpica";
+import { getDemoSchedule } from "../api/demo";
+import type { ScheduleRace } from "../types";
 import { Hero } from "../components/Hero";
+import { LiveRaceTiming } from "../components/LiveRaceTiming";
+import { SkeletonRows } from "../components/Skeleton";
 
 export const Live: React.FC = () => {
+  const { data, isLoading, isError } = useQuery<ScheduleRace[]>({
+    queryKey: ["schedule", 2026],
+    queryFn: () => getSchedule(2026),
+    staleTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 60 * 24,
+    retry: 1,
+  });
+
+  const races: ScheduleRace[] = isError ? getDemoSchedule() : data || [];
+  const upcomingRace = races.find((r) => !r.isCompleted) || races[races.length - 1];
+
+  if (isLoading && races.length === 0) {
+    return (
+      <main className="wrap">
+        <Hero
+          eyebrow="Formula 1 Pitwall"
+          title="Live Race Timing & Telemetry"
+          statusLine="Connecting to telemetry stream…"
+        />
+        <div style={{ marginTop: "24px", display: "grid", gap: "12px" }}>
+          <SkeletonRows count={8} />
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <div className="wrap">
+    <main className="wrap live-page-wrap">
       <Hero
-        eyebrow="Stage 3 Roadmap"
-        title="Live Timing & Scores"
-        statusLine="Real-time race telemetry, sector times, and lap charts."
+        eyebrow="Formula 1 Pitwall Telemetry"
+        title={upcomingRace ? `${upcomingRace.name} — Live Timing` : "Live Race Timing"}
+        statusLine={upcomingRace ? `Live sector times, driver positions, intervals, tyre stints & fastest laps at ${upcomingRace.circuit.name}.` : "Live timing stream"}
       />
-      <div className="card" style={{ padding: "32px", textAlign: "center", margin: "24px 0" }}>
-        <p style={{ color: "var(--muted)", fontSize: "16px", marginBottom: "16px" }}>
-          Live timing powered by OpenF1 driver positions, pit stop intervals, and tyre stint analytics is currently in development.
-        </p>
-        <Link to="/" className="nav-btn active" style={{ display: "inline-block" }}>
-          ← Back to Standings
-        </Link>
-      </div>
-    </div>
+
+      <section style={{ marginTop: "24px", marginBottom: "40px" }}>
+        <LiveRaceTiming race={upcomingRace} />
+      </section>
+    </main>
   );
 };
-

@@ -1561,3 +1561,741 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: #ffffff;
   border-color: var(--accent);
 }
+
+/* ==========================================================================
+   Live Race Timing & Telemetry (Pitwall Section)
+   ========================================================================== */
+
+/* Live Tab Button in Header */
+.live-tab-btn {
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+.live-tab-btn.active {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface)) !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+.live-tab-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 6px;
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 1.2s infinite;
+}
+
+/* Wide layout when Live mode is active */
+.upcoming-grid-layout.live-mode {
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 1040px) {
+  .upcoming-grid-layout.live-mode {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Active Live Banner Card in Left Panel */
+.live-status-active-card {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, var(--surface-2)), var(--surface-2));
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(225, 6, 0, 0.15);
+}
+
+.live-status-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.live-beacon-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: pulse 1.2s infinite;
+}
+
+.live-status-title {
+  font: 700 14px var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.live-status-desc {
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.live-quick-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.lqm-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.lqm-lbl {
+  color: var(--muted);
+  font: 600 11px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.lqm-val {
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lqm-val.green {
+  color: var(--up);
+}
+
+.lqm-val.purple {
+  color: #c084fc;
+}
+
+.track-action-btn.live-btn-highlight {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface-2));
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.track-action-btn.live-btn-highlight:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.track-action-btn.secondary {
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   LiveRaceTiming Component
+   -------------------------------------------------------------------------- */
+.live-timing-container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top bar */
+.live-timing-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.live-status-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.live-broadcast-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+  border: 1px solid var(--accent);
+  border-radius: 99px;
+  font: 700 11px var(--display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.live-flag-badge {
+  font: 700 11px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.live-flag-badge.green {
+  background: color-mix(in srgb, var(--up) 15%, transparent);
+  color: var(--up);
+  border-color: color-mix(in srgb, var(--up) 40%, transparent);
+}
+
+.live-lap-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: var(--surface);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+
+.lap-tag {
+  font: 700 10px var(--display);
+  letter-spacing: .1em;
+  color: var(--muted);
+}
+
+.lap-numbers {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.lap-numbers strong {
+  font-size: 16px;
+  color: var(--accent);
+}
+
+.live-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-ticker-toggle {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font: 700 11px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.live-ticker-toggle:hover {
+  border-color: var(--accent);
+}
+
+.live-fullscreen-link {
+  font: 700 11px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.live-fullscreen-link:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* Lap progress line */
+.live-lap-progress-track {
+  width: 100%;
+  height: 4px;
+  background: var(--line);
+}
+
+.live-lap-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ff5c5c);
+  transition: width 0.5s ease;
+}
+
+/* Highlights bar: Leader, Fastest Lap, Weather */
+.live-highlights-bar {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 12px;
+  padding: 12px 18px;
+  background: color-mix(in srgb, var(--surface-2) 60%, var(--surface));
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 760px) {
+  .live-highlights-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.highlight-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hl-label {
+  font: 600 10px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.hl-driver-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hl-num {
+  color: var(--muted);
+}
+
+.hl-name {
+  color: var(--text);
+}
+
+.hl-team {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.hl-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hl-purple-badge {
+  font: 700 10px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #c084fc;
+}
+
+.hl-fl-time {
+  font: 700 15px/1 var(--display);
+  color: #c084fc;
+  font-variant-numeric: tabular-nums;
+}
+
+.hl-fl-driver {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.hl-lap-num {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hl-weather-vals {
+  font-size: 12px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Filter Strip */
+.live-filter-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.live-filter-pill {
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font: 600 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.live-filter-pill:hover {
+  color: var(--text);
+}
+
+.live-filter-pill.active {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* --------------------------------------------------------------------------
+   Live Telemetry Table
+   -------------------------------------------------------------------------- */
+.live-table-wrapper {
+  overflow-x: auto;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.live-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.live-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-2);
+}
+
+.live-table th {
+  padding: 9px 12px;
+  font: 700 11px var(--display);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.live-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.live-row:hover {
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+.live-row.selected {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-left: 3px solid var(--accent);
+}
+
+.live-row.is-p1 {
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+}
+
+/* Position Badge */
+.td-pos {
+  width: 44px;
+}
+
+.pos-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  font: 700 13px/1 var(--display);
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+.pos-badge.pos-1 {
+  background: #f59e0b;
+  color: #000000;
+  border-color: #f59e0b;
+}
+
+.pos-badge.pos-2 {
+  background: #94a3b8;
+  color: #000000;
+  border-color: #94a3b8;
+}
+
+.pos-badge.pos-3 {
+  background: #b45309;
+  color: #ffffff;
+  border-color: #b45309;
+}
+
+/* Delta */
+.td-delta {
+  width: 50px;
+}
+
+.delta-gain {
+  color: var(--up);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.delta-loss {
+  color: var(--down);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.delta-equal {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Driver Cell */
+.driver-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.driver-avatar-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+.driver-num {
+  font: 700 11px var(--display);
+  color: var(--muted);
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.driver-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.driver-acronym {
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+/* Team Cell */
+.team-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.team-bar {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.team-text {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Gap and Interval */
+.td-gap, .td-interval {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gap-val.leader, .interval-val.leader {
+  color: var(--accent);
+  letter-spacing: .04em;
+}
+
+/* Fastest lap */
+.fl-val {
+  font-size: 12px;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.fl-val.is-overall-fl {
+  color: #c084fc;
+  font-weight: 700;
+}
+
+.fl-purple-dot {
+  font-size: 10px;
+}
+
+/* Tyre badges */
+.tyre-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tyre-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font: 700 10px var(--display);
+  border: 1.5px solid;
+}
+
+.tyre-badge.tyre-soft {
+  color: #ff3b30;
+  border-color: #ff3b30;
+  background: color-mix(in srgb, #ff3b30 15%, transparent);
+}
+
+.tyre-badge.tyre-medium {
+  color: #ffd000;
+  border-color: #ffd000;
+  background: color-mix(in srgb, #ffd000 15%, transparent);
+}
+
+.tyre-badge.tyre-hard {
+  color: #f5f5f7;
+  border-color: #f5f5f7;
+  background: color-mix(in srgb, #ffffff 15%, transparent);
+}
+
+.tyre-age {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.pit-badge {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Selected Driver Telemetry Drawer */
+.live-driver-telemetry-drawer {
+  padding: 16px 18px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.telemetry-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.td-driver-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.td-name {
+  margin: 0;
+  font: 700 18px var(--display);
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.td-team-tag {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.close-drawer-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font: 600 11px var(--display);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.close-drawer-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.telemetry-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .telemetry-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tel-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tc-lbl {
+  font: 600 10px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.tc-val {
+  font: 700 15px/1.1 var(--display);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}

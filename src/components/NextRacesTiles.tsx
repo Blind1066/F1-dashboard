@@ -178,3 +178,4 @@ export const NextRacesTiles: React.FC<NextRacesTilesProps> = ({
     </section>
   );
 };
+

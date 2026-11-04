@@ -284,3 +284,43 @@ export interface FullRaceDetails {
 }
 
 
+
+export interface LiveDriverTiming {
+  position: number;
+  delta: number;
+  number: string;
+  code: string;
+  name: string;
+  team: string;
+  teamId: string;
+  colour: string;
+  headshot: string;
+  gap: string;
+  interval: string;
+  lastLap: string;
+  fastestLap: string;
+  isFastestLap: boolean;
+  tyre: "soft" | "medium" | "hard" | "intermediate" | "wet";
+  tyreAge: number;
+  pitStops: number;
+  status: "active" | "in_pit" | "out";
+  sector1: string;
+  sector2: string;
+  sector3: string;
+}
+
+export interface LiveRaceSessionState {
+  round: number;
+  raceName: string;
+  circuitName: string;
+  currentLap: number;
+  totalLaps: number;
+  status: "GREEN FLAG" | "YELLOW FLAG" | "SAFETY CAR" | "VSC" | "RED FLAG" | "CHEQUERED FLAG";
+  fastestLapDriver: string;
+  fastestLapTime: string;
+  fastestLapLap: number;
+  trackTemp: string;
+  airTemp: string;
+  humidity: string;
+  drivers: LiveDriverTiming[];
+}

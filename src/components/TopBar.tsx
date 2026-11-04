@@ -64,8 +64,7 @@ export const TopBar: React.FC = () => {
             </NavLink>
             <NavLink
               to="/live"
-              className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn soon")}
-              title="Stage 3: Live (Coming soon)"
+              className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
             >
               Live
             </NavLink>

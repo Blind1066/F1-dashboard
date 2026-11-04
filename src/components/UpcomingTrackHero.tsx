@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { ScheduleRace } from "../types";
 import { getCircuitData } from "../data/circuits";
 import { TrackBlueprint } from "./TrackBlueprint";
+import { LiveRaceTiming } from "./LiveRaceTiming";
 
 interface UpcomingTrackHeroProps {
   race: ScheduleRace | null;
@@ -37,8 +38,18 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
       ? calculateCountdown(race.raceTimes.date)
       : { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: false }
   );
-  const [activeTab, setActiveTab] = useState<"blueprint" | "sessions">("blueprint");
+
+  const [activeTab, setActiveTab] = useState<"blueprint" | "sessions" | "live">(
+    countdown.isPast ? "live" : "blueprint"
+  );
   const [flagFailed, setFlagFailed] = useState(false);
+
+  // Automatically switch to live tab when race goes live
+  useEffect(() => {
+    if (countdown.isPast && activeTab !== "live") {
+      setActiveTab("live");
+    }
+  }, [countdown.isPast, activeTab]);
 
   useEffect(() => {
     if (!race) return;
@@ -75,7 +86,9 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
       <div className="upcoming-top-bar">
         <div className="upcoming-pill">
           <span className="live-radar-dot" />
-          <span>Upcoming Track • Round {race.round}</span>
+          <span>
+            {isPast || activeTab === "live" ? "🔴 TRACK IS LIVE" : `Upcoming Track • Round ${race.round}`}
+          </span>
         </div>
 
         <div className="upcoming-flag-group">
@@ -109,8 +122,19 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
           </div>
         </div>
 
-        {/* Tab switchers */}
+        {/* Tab switchers with Live Tab highlighted */}
         <div className="upcoming-tab-buttons" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "live"}
+            className={`tab-btn live-tab-btn${activeTab === "live" ? " active" : ""}`}
+            onClick={() => setActiveTab("live")}
+            title="View Live Race Leaderboard & Telemetry"
+          >
+            <span className="live-tab-dot" />
+            🔴 VIEW LIVE
+          </button>
           <button
             type="button"
             role="tab"
@@ -132,23 +156,40 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
         </div>
       </div>
 
-      {/* 2-Column Content Grid */}
-      <div className="upcoming-grid-layout">
-        {/* Left Column: Countdown & Dual Times */}
+      {/* Grid Layout: shifts to wide view if live tab active */}
+      <div className={`upcoming-grid-layout${activeTab === "live" ? " live-mode" : ""}`}>
+        {/* Left Column: Countdown / Live Status & Dual Times */}
         <div className="upcoming-left-col">
-          {/* Digital Countdown Box */}
-          <div className="countdown-box" aria-label="Countdown to lights out">
-            <div className="countdown-tag">
-              {isPast ? "Session Status" : "Live Countdown To Lights Out"}
-            </div>
-            {isPast ? (
-              <div
-                className="countdown-grid"
-                style={{ color: "var(--accent)", fontWeight: 700 }}
-              >
-                🏁 Lights Out / Grand Prix Underway
+          {/* Live Status or Digital Countdown Box */}
+          {activeTab === "live" || isPast ? (
+            <div className="live-status-active-card">
+              <div className="live-status-head">
+                <span className="live-beacon-dot" />
+                <span className="live-status-title">RACE IS UNDERWAY LIVE</span>
               </div>
-            ) : (
+              <p className="live-status-desc">
+                Real-time pitwall telemetry active: Driver positions, gaps to leader, intervals, tyre stints &amp; fastest lap.
+              </p>
+              <div className="live-quick-metrics">
+                <div className="lqm-item">
+                  <span className="lqm-lbl">Track Status</span>
+                  <span className="lqm-val green">🟢 Green Flag</span>
+                </div>
+                <div className="lqm-item">
+                  <span className="lqm-lbl">Leader</span>
+                  <span className="lqm-val">P1 Lando Norris</span>
+                </div>
+                <div className="lqm-item">
+                  <span className="lqm-lbl">Fastest Lap</span>
+                  <span className="lqm-val purple">🟣 1:10.540</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="countdown-box" aria-label="Countdown to lights out">
+              <div className="countdown-tag">
+                Live Countdown To Lights Out
+              </div>
               <div
                 className="countdown-grid"
                 aria-label={`${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}
@@ -173,8 +214,8 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
                   <span className="cd-lbl">Secs</span>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Dual Timing: Local vs Track */}
           <div className="timing-dual">
@@ -205,22 +246,45 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
             </div>
           )}
 
-          {/* Action Button */}
-          {onOpenDetails && (
+          {/* Quick Tab Switcher Button in Left Panel */}
+          {activeTab !== "live" ? (
+            <button
+              type="button"
+              className="track-action-btn live-btn-highlight"
+              onClick={() => setActiveTab("live")}
+            >
+              <span>🔴 Enter Live Timing Section</span>
+              <span>→</span>
+            </button>
+          ) : (
             <button
               type="button"
               className="track-action-btn"
+              onClick={() => setActiveTab("blueprint")}
+            >
+              <span>🗺️ Switch to Track Blueprint</span>
+              <span>→</span>
+            </button>
+          )}
+
+          {/* Explore Details */}
+          {onOpenDetails && (
+            <button
+              type="button"
+              className="track-action-btn secondary"
               onClick={() => onOpenDetails(race.round)}
             >
-              <span>Explore Full Grand Prix Details</span>
-              <span>→</span>
+              <span>Explore Grand Prix History</span>
+              <span>↗</span>
             </button>
           )}
         </div>
 
-        {/* Right Column: Blueprint or Sessions Drawer */}
+        {/* Right Column: Live Telemetry / Track Blueprint / Sessions */}
         <div className="upcoming-right-col">
-          {activeTab === "blueprint" ? (
+          {activeTab === "live" ? (
+            <LiveRaceTiming race={race} />
+          ) : activeTab === "blueprint" ? (
             <TrackBlueprint circuit={circuitData} />
           ) : (
             <div className="weekend-sessions" style={{ marginTop: 0 }}>
