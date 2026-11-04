@@ -1047,6 +1047,25 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: var(--text);
 }
 
+.track-view-toggle-pill {
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+  font: 700 10px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.track-view-toggle-pill:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
 .track-svg-canvas {
   position: relative;
   width: 100%;
@@ -1578,6 +1597,46 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   background: color-mix(in srgb, var(--accent) 18%, var(--surface)) !important;
   border: 1px solid var(--accent) !important;
   box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+/* Fullscreen Pitwall Pill Button matching User Reference */
+.fullscreen-pitwall-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(225, 6, 0, 0.16);
+  border: 1.5px solid #e10600;
+  color: #ffffff;
+  font: 800 12px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(225, 6, 0, 0.25);
+}
+
+.fullscreen-pitwall-pill-btn:hover {
+  background: #e10600;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(225, 6, 0, 0.7);
+  transform: translateY(-1px);
+}
+
+.track-action-btn.pitwall-cta {
+  background: linear-gradient(135deg, rgba(225, 6, 0, 0.22), rgba(225, 6, 0, 0.08));
+  border: 1.5px solid #e10600;
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(225, 6, 0, 0.2);
+}
+
+.track-action-btn.pitwall-cta:hover {
+  background: #e10600;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(225, 6, 0, 0.6);
 }
 
 .live-tab-dot {
@@ -2305,16 +2364,20 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
    ========================================================================== */
 
 .fullscreen-pitwall-page {
-  width: 100%;
-  min-height: calc(100vh - 58px);
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   background: #090a0d;
 }
 
 .f1-pitwall-fullscreen-window {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-height: calc(100vh - 58px);
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   background: #0a0b0f;
   color: #f1f2f5;
   font-family: var(--body);
@@ -2955,12 +3018,17 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   align-items: center;
   justify-content: center;
   transition: transform 0.25s ease;
+  overflow: hidden;
+  padding: 12px;
 }
 
 .brasil-interactive-svg {
-  width: 95%;
-  height: 95%;
-  max-width: 980px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* Driver blips & Beacon */

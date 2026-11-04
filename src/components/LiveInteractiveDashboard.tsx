@@ -153,12 +153,12 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
               // fallback
             }
 
-            // Derive realistic telemetry based on track location:
-            // Straights (y < 210 or y > 450 with low curvature): high speed, 8th gear, 100% throttle, DRS on!
-            // Turns (Senna S, Bico de Pato, Ferradura): high curvature, braking, 3rd-4th gear, DRS off.
-            const isStraight1 = pt.y > 170 && pt.y < 200 && pt.x < 520 && pt.x > 210; // Reta Oposta
-            const isStraight2 = (pt.x > 570 && pt.y < 240) || (pt.x > 580 && pt.y > 330); // Main straight
-            const isDRSZone = isStraight1 || isStraight2;
+            // Derive realistic telemetry based on Brazil circuit (1920x1080) track location:
+            // Reta Oposta straightaway (DRS Zone 1): pt.y > 780 && pt.x >= 240 && pt.x <= 1180
+            // Main / Pit straight (DRS Zone 2): pt.y < 170 && pt.x > 500 && pt.x < 1500
+            const isDRS1 = pt.y > 780 && pt.x >= 240 && pt.x <= 1180;
+            const isDRS2 = pt.y < 170 && pt.x > 500 && pt.x < 1500;
+            const isDRSZone = isDRS1 || isDRS2;
 
             let curSpeed = 240;
             let curRpm = 10500;
@@ -167,31 +167,38 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
             let curBrake = 0;
 
             if (isDRSZone) {
-              curSpeed = 310 + Math.sin(time * 0.003 + idx) * 15;
-              curRpm = 11800 + Math.sin(time * 0.005) * 400;
+              curSpeed = 315 + Math.sin(time * 0.003 + idx) * 15;
+              curRpm = 11850 + Math.sin(time * 0.005) * 350;
               curGear = 8;
               curThrottle = 100;
               curBrake = 0;
-            } else if (pt.y > 270 && pt.x > 590) {
-              // Senna S turns 1-2
-              curSpeed = 125 + Math.sin(time * 0.004) * 8;
+            } else if (pt.x < 220 && pt.y >= 260 && pt.y <= 460) {
+              // Senna S chicane (Turns 1-2)
+              curSpeed = 115 + Math.sin(time * 0.004) * 8;
               curRpm = 8900;
               curGear = 3;
               curThrottle = 35;
-              curBrake = 65;
-            } else if (pt.x < 420 && pt.x > 360 && pt.y < 360 && pt.y > 320) {
+              curBrake = 75;
+            } else if (pt.x >= 980 && pt.x <= 1120 && pt.y < 380 && pt.y > 200) {
               // Bico de Pato hairpin (Turn 10)
-              curSpeed = 85 + Math.sin(time * 0.004) * 6;
-              curRpm = 7800;
+              curSpeed = 82 + Math.sin(time * 0.004) * 6;
+              curRpm = 7600;
               curGear = 2;
               curThrottle = 20;
               curBrake = 85;
+            } else if (pt.x > 1180 && pt.y > 750) {
+              // Descida do Lago (Turns 4-5)
+              curSpeed = 155 + Math.sin(time * 0.003) * 12;
+              curRpm = 9500;
+              curGear = 4;
+              curThrottle = 50;
+              curBrake = 55;
             } else {
-              // Mid-speed flowing curves
-              curSpeed = 195 + Math.sin(time * 0.002 + idx) * 20;
-              curRpm = 10200;
+              // Flowing mid-speed curves (Ferradura, Mergulho, Junção)
+              curSpeed = 205 + Math.sin(time * 0.002 + idx) * 20;
+              curRpm = 10400;
               curGear = 5;
-              curThrottle = 75;
+              curThrottle = 80;
               curBrake = 10;
             }
 
@@ -521,13 +528,8 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
                   aria-label="Autódromo José Carlos Pace Live Driver Tracker"
                 >
                   <defs>
-                    <linearGradient id="drsGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#ffd000" />
-                      <stop offset="100%" stopColor="#3ecf8e" />
-                    </linearGradient>
-
                     <filter id="beaconGlow" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur stdDeviation="8" result="blur" />
+                      <feGaussianBlur stdDeviation="14" result="blur" />
                       <feMerge>
                         <feMergeNode in="blur" />
                         <feMergeNode in="SourceGraphic" />
@@ -543,105 +545,15 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
                     stroke="none"
                   />
 
-                  {/* Wide Track Surface Base */}
-                  <path
-                    d={BRASIL_CIRCUIT_CONFIG.trackPath}
-                    fill="none"
-                    stroke="#1a1c23"
-                    strokeWidth="32"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                  {/* Official Brazil Circuit Track Map Graphic uploaded by user */}
+                  <image
+                    href={BRASIL_CIRCUIT_CONFIG.imageSrc}
+                    x="0"
+                    y="0"
+                    width="1920"
+                    height="1080"
+                    preserveAspectRatio="xMidYMid meet"
                   />
-
-                  {/* Outer Curb Borders */}
-                  <path
-                    d={BRASIL_CIRCUIT_CONFIG.trackPath}
-                    fill="none"
-                    stroke="#2e323d"
-                    strokeWidth="20"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-
-                  {/* Asphalt Track Surface */}
-                  <path
-                    d={BRASIL_CIRCUIT_CONFIG.trackPath}
-                    fill="none"
-                    stroke="#0d0e12"
-                    strokeWidth="12"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-
-                  {/* Yellow DRS Zones Highlights */}
-                  {BRASIL_CIRCUIT_CONFIG.drsZones.map((drs) => (
-                    <path
-                      key={drs.id}
-                      d={drs.path}
-                      fill="none"
-                      stroke="#ffe600"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      opacity="0.85"
-                    />
-                  ))}
-
-                  {/* Start / Finish Line Checkered Strip */}
-                  <g transform={`translate(${BRASIL_CIRCUIT_CONFIG.startFinish.x}, ${BRASIL_CIRCUIT_CONFIG.startFinish.y}) rotate(${BRASIL_CIRCUIT_CONFIG.startFinish.angle})`}>
-                    <line x1="0" y1="-10" x2="0" y2="10" stroke="#ffffff" strokeWidth="4" strokeDasharray="3 3" />
-                    <rect x="-8" y="-12" width="16" height="24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1" rx="2" />
-                  </g>
-
-                  {/* Turn Numbers */}
-                  {BRASIL_CIRCUIT_CONFIG.turns.map((t) => (
-                    <g key={t.number} transform={`translate(${t.x}, ${t.y})`} className="turn-node">
-                      <circle cx="0" cy="0" r="10" fill="#181a20" stroke="#333846" strokeWidth="1.5" />
-                      <text x="0" y="3.5" fill="#8b92a0" fontSize="8" fontWeight="700" textAnchor="middle" fontFamily="var(--display)">
-                        {t.number}
-                      </text>
-                    </g>
-                  ))}
-
-                  {/* Track Annotations: Speed Trap & DRS Labels */}
-                  <g transform={`translate(${BRASIL_CIRCUIT_CONFIG.speedTrap.x}, ${BRASIL_CIRCUIT_CONFIG.speedTrap.y - 12})`}>
-                    <circle cx="0" cy="12" r="3.5" fill="#ffffff" />
-                    <rect x="-35" y="-14" width="70" height="15" rx="3" fill="#181a20" stroke="#333846" />
-                    <text x="0" y="-3.5" fill="#ffffff" fontSize="7.5" fontWeight="700" letterSpacing="0.06em" textAnchor="middle" fontFamily="var(--display)">
-                      SPEED TRAP
-                    </text>
-                  </g>
-
-                  {/* DRS Activation Zone 1 Label */}
-                  <g transform="translate(585, 305)">
-                    <rect x="-4" y="-8" width="82" height="13" rx="3" fill="#181a20" stroke="#ffe600" strokeWidth="0.8" />
-                    <text x="37" y="1" fill="#ffe600" fontSize="6.5" fontWeight="700" letterSpacing="0.05em" textAnchor="middle" fontFamily="var(--display)">
-                      DRS ACTIVATION ZONE 1
-                    </text>
-                  </g>
-
-                  {/* DRS Activation Zone 2 Label */}
-                  <g transform="translate(370, 160)">
-                    <rect x="-4" y="-8" width="82" height="13" rx="3" fill="#181a20" stroke="#ffe600" strokeWidth="0.8" />
-                    <text x="37" y="1" fill="#ffe600" fontSize="6.5" fontWeight="700" letterSpacing="0.05em" textAnchor="middle" fontFamily="var(--display)">
-                      DRS ACTIVATION ZONE 2
-                    </text>
-                  </g>
-
-                  {/* Sector Labels */}
-                  {BRASIL_CIRCUIT_CONFIG.sectors.map((sec) => (
-                    <text
-                      key={sec.name}
-                      x={sec.x}
-                      y={sec.y}
-                      fill="#505663"
-                      fontSize="9"
-                      fontWeight="700"
-                      letterSpacing="0.1em"
-                      fontFamily="var(--display)"
-                    >
-                      {sec.name}
-                    </text>
-                  ))}
 
                   {/* LIVE MOVING DRIVER BLIPS */}
                   {cars.map((car) => {
@@ -656,26 +568,25 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
                         onClick={() => setSelectedCode(car.code)}
                         cursor="pointer"
                       >
-                        {/* Selected Driver Pulsing Beacon Ring */}
+                        {/* Selected Driver Pulsing Glowing Radar Aura */}
                         {isSelected && (
                           <>
                             <circle
                               cx="0"
                               cy="0"
-                              r="26"
-                              fill="none"
-                              stroke="var(--accent)"
-                              strokeWidth="2"
-                              opacity="0.4"
+                              r="54"
+                              fill="rgba(0, 212, 255, 0.2)"
+                              stroke="#00d4ff"
+                              strokeWidth="2.5"
                               filter="url(#beaconGlow)"
                               className="beacon-pulse"
                             />
                             <circle
                               cx="0"
                               cy="0"
-                              r="16"
-                              fill="color-mix(in srgb, var(--accent) 30%, transparent)"
-                              stroke="var(--accent)"
+                              r="32"
+                              fill="rgba(0, 212, 255, 0.35)"
+                              stroke="#00d4ff"
                               strokeWidth="2"
                             />
                           </>
@@ -686,11 +597,11 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
                           <circle
                             cx="0"
                             cy="0"
-                            r="15"
+                            r="26"
                             fill="none"
-                            stroke="#ff9f0a"
-                            strokeWidth="2.5"
-                            strokeDasharray="3 3"
+                            stroke="#ff453a"
+                            strokeWidth="3.5"
+                            strokeDasharray="6 4"
                           />
                         )}
 
@@ -698,37 +609,59 @@ export const LiveInteractiveDashboard: React.FC<LiveInteractiveDashboardProps> =
                         <circle
                           cx="0"
                           cy="0"
-                          r={isSelected ? 9 : 6.5}
+                          r={isSelected ? 16 : 12}
                           fill={car.colour}
                           stroke="#ffffff"
-                          strokeWidth={isSelected ? 2 : 1.2}
+                          strokeWidth={isSelected ? 3.5 : 2.5}
                         />
 
-                        {/* Driver 3-Letter Tag Banner */}
-                        <g transform={`translate(${isSelected ? 14 : 10}, ${isSelected ? -10 : -7})`}>
-                          <rect
-                            x="0"
-                            y="0"
-                            width={isSelected ? 36 : 28}
-                            height={isSelected ? 18 : 14}
-                            rx="3"
-                            fill={isSelected ? "#ffffff" : "#181a20"}
-                            stroke={isSelected ? "var(--accent)" : "rgba(255,255,255,0.2)"}
-                            strokeWidth={isSelected ? 1.5 : 0.8}
-                          />
+                        {/* Driver Tag Badge */}
+                        {isSelected ? (
+                          <g transform="translate(24, -18)">
+                            <rect
+                              x="0"
+                              y="0"
+                              width="76"
+                              height="36"
+                              rx="6"
+                              fill="#ffffff"
+                              style={{ filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.8))" }}
+                            />
+                            <rect
+                              x="5"
+                              y="6"
+                              width="6"
+                              height="24"
+                              rx="3"
+                              fill={car.colour}
+                            />
+                            <text
+                              x="44"
+                              y="25"
+                              fill="#000000"
+                              fontSize="19"
+                              fontWeight="900"
+                              letterSpacing="0.06em"
+                              textAnchor="middle"
+                              fontFamily="var(--display)"
+                            >
+                              {car.code}
+                            </text>
+                          </g>
+                        ) : (
                           <text
-                            x={isSelected ? 18 : 14}
-                            y={isSelected ? 13 : 10}
-                            fill={isSelected ? "#000000" : "#ffffff"}
-                            fontSize={isSelected ? 9.5 : 7.5}
-                            fontWeight="700"
+                            x="16"
+                            y="6"
+                            fill="#ffffff"
+                            fontSize="17"
+                            fontWeight="800"
                             letterSpacing="0.06em"
-                            textAnchor="middle"
                             fontFamily="var(--display)"
+                            style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.95))" }}
                           >
                             {car.code}
                           </text>
-                        </g>
+                        )}
                       </g>
                     );
                   })}

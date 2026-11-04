@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { ScheduleRace } from "../types";
 import { getCircuitData } from "../data/circuits";
 import { TrackBlueprint } from "./TrackBlueprint";
@@ -122,8 +123,33 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
           </div>
         </div>
 
-        {/* Tab switchers with Live Tab highlighted */}
+        {/* Tab switchers with Live Tab highlighted & Fullscreen Pitwall shortcut */}
         <div className="upcoming-tab-buttons" role="tablist">
+          <Link
+            to="/live"
+            className="fullscreen-pitwall-pill-btn"
+            title="Launch Fullscreen Interactive Pitwall & Live Driver Tracker"
+          >
+            <span>FULLSCREEN PITWALL ↗</span>
+          </Link>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "blueprint"}
+            className={`tab-btn${activeTab === "blueprint" ? " active" : ""}`}
+            onClick={() => setActiveTab("blueprint")}
+          >
+            📖 TRACK BLUEPRINT
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "sessions"}
+            className={`tab-btn${activeTab === "sessions" ? " active" : ""}`}
+            onClick={() => setActiveTab("sessions")}
+          >
+            ⏱️ WEEKEND SESSIONS ({race.sessions?.length || 0})
+          </button>
           <button
             type="button"
             role="tab"
@@ -134,24 +160,6 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
           >
             <span className="live-tab-dot" />
             🔴 VIEW LIVE
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "blueprint"}
-            className={`tab-btn${activeTab === "blueprint" ? " active" : ""}`}
-            onClick={() => setActiveTab("blueprint")}
-          >
-            🗺️ Track Blueprint
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "sessions"}
-            className={`tab-btn${activeTab === "sessions" ? " active" : ""}`}
-            onClick={() => setActiveTab("sessions")}
-          >
-            ⏱️ Weekend Sessions ({race.sessions?.length || 0})
           </button>
         </div>
       </div>
@@ -246,11 +254,20 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
             </div>
           )}
 
-          {/* Quick Tab Switcher Button in Left Panel */}
+          {/* Quick Tab Switcher Button & Fullscreen Pitwall link */}
+          <Link
+            to="/live"
+            className="track-action-btn live-btn-highlight pitwall-cta"
+            title="Launch Fullscreen Interactive Driver Tracker Pitwall"
+          >
+            <span>FULLSCREEN PITWALL</span>
+            <span>↗</span>
+          </Link>
+
           {activeTab !== "live" ? (
             <button
               type="button"
-              className="track-action-btn live-btn-highlight"
+              className="track-action-btn"
               onClick={() => setActiveTab("live")}
             >
               <span>🔴 Enter Live Timing Section</span>
@@ -262,7 +279,7 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
               className="track-action-btn"
               onClick={() => setActiveTab("blueprint")}
             >
-              <span>🗺️ Switch to Track Blueprint</span>
+              <span>📖 Switch to Track Blueprint</span>
               <span>→</span>
             </button>
           )}

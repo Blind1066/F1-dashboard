@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { TopBar } from "./components/TopBar";
 import { Home } from "./pages/Home";
 import { Schedule } from "./pages/Schedule";
@@ -9,9 +9,12 @@ import { Live } from "./pages/Live";
 import { Telemetry } from "./pages/Telemetry";
 
 export const App: React.FC = () => {
+  const location = useLocation();
+  const isPitwallPage = location.pathname === "/live";
+
   return (
     <>
-      <TopBar />
+      {!isPitwallPage && <TopBar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/schedule" element={<Schedule />} />
@@ -21,13 +24,15 @@ export const App: React.FC = () => {
         <Route path="/telemetry" element={<Telemetry />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <footer className="wrap foot">
-        Data:{" "}
-        <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener noreferrer">
-          Jolpica F1 API
-        </a>
-        . Unofficial fan project — not affiliated with Formula 1.
-      </footer>
+      {!isPitwallPage && (
+        <footer className="wrap foot">
+          Data:{" "}
+          <a href="https://github.com/jolpica/jolpica-f1" target="_blank" rel="noopener noreferrer">
+            Jolpica F1 API
+          </a>
+          . Unofficial fan project — not affiliated with Formula 1.
+        </footer>
+      )}
     </>
   );
 };
