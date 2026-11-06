@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { ScheduleRace } from "../types";
 import { getCircuitData } from "../data/circuits";
+import { getTrackPhoto, formatWeekendRange } from "../utils/trackPhotos";
 import { TrackBlueprint } from "./TrackBlueprint";
 import { LiveRaceTiming } from "./LiveRaceTiming";
 
@@ -80,91 +81,109 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
     race.circuit.country,
     race.circuit.city
   );
+  const trackBg = getTrackPhoto(race.round, race.circuit.id, race.circuit.country);
+  const weekendDates = formatWeekendRange(race);
 
   return (
-    <section className="upcoming-hero-card" aria-label="Upcoming Track Showcase">
-      {/* Top Banner: Round Badge, Country Flag, Dates */}
-      <div className="upcoming-top-bar">
-        <div className="upcoming-pill">
-          <span className="live-radar-dot" />
-          <span>
-            {isPast || activeTab === "live" ? "🔴 TRACK IS LIVE" : `Upcoming Track • Round ${race.round}`}
-          </span>
-        </div>
+    <section className="upcoming-hero-card has-track-bg" aria-label="Upcoming Track Showcase">
+      {/* Background Track Photo Layer */}
+      <div
+        className="next-race-bg-photo"
+        style={{ backgroundImage: `url(${trackBg})` }}
+        aria-hidden="true"
+      />
+      <div className="next-race-bg-overlay" aria-hidden="true" />
 
-        <div className="upcoming-flag-group">
-          {!flagFailed && race.circuit.flagUrl ? (
-            <img
-              src={race.circuit.flagUrl}
-              alt={race.circuit.country}
-              className="race-flag-img"
-              onError={() => setFlagFailed(true)}
-            />
-          ) : (
-            <span style={{ fontSize: "20px" }}>{race.circuit.flag}</span>
-          )}
-          <span className="upcoming-country-text">
-            {race.circuit.city}, {race.circuit.country}
-          </span>
-        </div>
-      </div>
+      <div className="upcoming-hero-content">
+        {/* Top Banner: Round Badge, Country Flag, Dates */}
+        <div className="upcoming-top-bar">
+          <div className="upcoming-pill">
+            <span className="live-radar-dot" />
+            <span>
+              {isPast || activeTab === "live" ? "🔴 TRACK IS LIVE" : `Upcoming Track • Round ${race.round}`}
+            </span>
+          </div>
 
-      {/* Main Hero Header */}
-      <div className="upcoming-header-main">
-        <div>
-          <h1 className="upcoming-hero-title">{race.name}</h1>
-          <div className="upcoming-circuit-meta">
-            <span className="circuit-name-icon">🏁</span>
-            <span className="circuit-name-text">{race.circuit.name}</span>
-            <span className="meta-sep">•</span>
-            <span className="circuit-dates-text">
-              {race.raceTimes.localDate} ({race.raceTimes.localTime})
+          <div className="upcoming-flag-group">
+            {!flagFailed && race.circuit.flagUrl ? (
+              <img
+                src={race.circuit.flagUrl}
+                alt={race.circuit.country}
+                className="race-flag-img"
+                onError={() => setFlagFailed(true)}
+              />
+            ) : (
+              <span style={{ fontSize: "20px" }}>{race.circuit.flag}</span>
+            )}
+            <span className="upcoming-country-text">
+              {race.circuit.city}, {race.circuit.country}
             </span>
           </div>
         </div>
 
-        {/* Tab switchers with Live Tab highlighted & Fullscreen Pitwall shortcut */}
-        <div className="upcoming-tab-buttons" role="tablist">
-          <Link
-            to="/live"
-            className="fullscreen-pitwall-pill-btn"
-            title="Launch Fullscreen Interactive Pitwall & Live Driver Tracker"
-          >
-            <span>FULLSCREEN PITWALL ↗</span>
-          </Link>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "blueprint"}
-            className={`tab-btn${activeTab === "blueprint" ? " active" : ""}`}
-            onClick={() => setActiveTab("blueprint")}
-          >
-            📖 TRACK BLUEPRINT
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "sessions"}
-            className={`tab-btn${activeTab === "sessions" ? " active" : ""}`}
-            onClick={() => setActiveTab("sessions")}
-          >
-            ⏱️ WEEKEND SESSIONS ({race.sessions?.length || 0})
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "live"}
-            className={`tab-btn live-tab-btn${activeTab === "live" ? " active" : ""}`}
-            onClick={() => setActiveTab("live")}
-            title="View Live Race Leaderboard & Telemetry"
-          >
-            <span className="live-tab-dot" />
-            🔴 VIEW LIVE
-          </button>
-        </div>
-      </div>
+        {/* Main Hero Header */}
+        <div className="upcoming-header-main">
+          <div>
+            <h1 className="upcoming-hero-title">{race.name}</h1>
+            <div className="upcoming-circuit-meta">
+              <span className="circuit-name-icon">📍</span>
+              <span className="circuit-name-text">{race.circuit.name}</span>
+              {weekendDates && (
+                <>
+                  <span className="meta-bar">|</span>
+                  <span className="meta-dates">{weekendDates}</span>
+                </>
+              )}
+              <span className="meta-sep">•</span>
+              <span className="circuit-dates-text">
+                {race.circuit.city}, {race.circuit.country}
+              </span>
+            </div>
+          </div>
 
-      {/* Grid Layout: shifts to wide view if live tab active */}
+          {/* Tab switchers with Live Tab highlighted & Fullscreen Pitwall shortcut */}
+          <div className="upcoming-tab-buttons" role="tablist">
+            <Link
+              to="/live"
+              className="watch-live-hero-btn"
+              title="Launch Fullscreen Interactive Pitwall & Live Driver Tracker"
+            >
+              <span className="watch-live-text">WATCH LIVE</span>
+              <span className="watch-live-icon">▶</span>
+            </Link>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "blueprint"}
+              className={`tab-btn${activeTab === "blueprint" ? " active" : ""}`}
+              onClick={() => setActiveTab("blueprint")}
+            >
+              📖 TRACK BLUEPRINT
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "sessions"}
+              className={`tab-btn${activeTab === "sessions" ? " active" : ""}`}
+              onClick={() => setActiveTab("sessions")}
+            >
+              ⏱️ WEEKEND SESSIONS ({race.sessions?.length || 0})
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "live"}
+              className={`tab-btn live-tab-btn${activeTab === "live" ? " active" : ""}`}
+              onClick={() => setActiveTab("live")}
+              title="View Live Race Leaderboard & Telemetry"
+            >
+              <span className="live-tab-dot" />
+              🔴 VIEW LIVE
+            </button>
+          </div>
+        </div>
+
+        {/* Grid Layout: shifts to wide view if live tab active */}
       <div className={`upcoming-grid-layout${activeTab === "live" ? " live-mode" : ""}`}>
         {/* Left Column: Countdown / Live Status & Dual Times */}
         <div className="upcoming-left-col">
@@ -327,6 +346,7 @@ export const UpcomingTrackHero: React.FC<UpcomingTrackHeroProps> = ({
           )}
         </div>
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import type { ScheduleRace } from "../types";
 import { getCircuitData } from "../data/circuits";
+import { getTrackPhoto } from "../utils/trackPhotos";
 import { TrackBlueprint } from "./TrackBlueprint";
 
 interface NextRacesTilesProps {
@@ -59,12 +60,21 @@ export const NextRacesTiles: React.FC<NextRacesTilesProps> = ({
           );
           const isExpanded = expandedRound === race.round;
           const daysText = getDaysUntil(race.raceTimes.date);
+          const trackBg = getTrackPhoto(race.round, race.circuit.id, race.circuit.country);
 
           return (
             <article
               key={race.round}
-              className={`big-race-tile${isExpanded ? " expanded" : ""}`}
+              className={`big-race-tile has-track-bg${isExpanded ? " expanded" : ""}`}
             >
+              {/* Subtle Track Photo Backdrop */}
+              <div
+                className="tile-bg-photo"
+                style={{ backgroundImage: `url(${trackBg})` }}
+                aria-hidden="true"
+              />
+              <div className="tile-bg-overlay" aria-hidden="true" />
+
               {/* Top Banner: Round badge & Flag & Date */}
               <div className="tile-top-bar">
                 <div className="tile-round-chip">

@@ -282,6 +282,54 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   border-left: 6px solid var(--accent); border-radius: var(--radius);
   padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.2);
 }
+.next-race-card.has-track-bg,
+.upcoming-hero-card.has-track-bg {
+  position: relative;
+  overflow: hidden;
+  background-color: #080a10;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  border-left: 6px solid var(--accent);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.4), 0 0 30px rgba(225, 6, 0, 0.1);
+}
+
+.next-race-bg-photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 65%;
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+  opacity: 0.65;
+  z-index: 0;
+  pointer-events: none;
+  filter: contrast(1.08) saturate(1.1);
+  transition: opacity 0.3s ease, transform 0.4s ease;
+}
+
+.next-race-card:hover .next-race-bg-photo,
+.upcoming-hero-card:hover .next-race-bg-photo {
+  opacity: 0.72;
+  transform: scale(1.02);
+}
+
+.next-race-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #080a10 0%, rgba(8, 10, 16, 0.98) 32%, rgba(8, 10, 16, 0.88) 52%, rgba(8, 10, 16, 0.42) 80%, rgba(8, 10, 16, 0.7) 100%),
+    linear-gradient(180deg, rgba(8, 10, 16, 0.35) 0%, rgba(8, 10, 16, 0.85) 75%, #080a10 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.next-race-content,
+.upcoming-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
 .next-badge-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 .next-chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
@@ -291,9 +339,64 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
 
-.next-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
-.next-title { margin: 0; font: 700 clamp(28px, 5vw, 44px)/1.05 var(--display); text-transform: uppercase; letter-spacing: .02em; }
-.next-venue { color: var(--muted); font-size: 15px; margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.next-title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+.next-title-col { flex: 1; min-width: 280px; }
+.next-title { margin: 0; font: 800 clamp(28px, 5vw, 44px)/1.05 var(--display); text-transform: uppercase; letter-spacing: .02em; }
+.next-venue { color: var(--muted); font-size: 15px; margin-top: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.venue-bar { color: var(--accent); opacity: 0.8; font-weight: 700; margin: 0 4px; }
+.venue-dates { color: var(--text); font-weight: 700; letter-spacing: 0.04em; }
+
+/* Watch Live Hero CTA Button (Image 1 reference) */
+.watch-live-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #e10600 0%, #b80500 100%);
+  color: #ffffff !important;
+  text-decoration: none;
+  font: 800 13px/1 var(--display);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 12px 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 18px rgba(225, 6, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.watch-live-hero-btn:hover {
+  background: linear-gradient(135deg, #ff1a10 0%, #d40700 100%);
+  box-shadow: 0 6px 24px rgba(225, 6, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  color: #ffffff !important;
+}
+.watch-live-hero-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+.watch-live-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  font-size: 9px;
+  line-height: 1;
+  padding-left: 2px;
+}
+@media (max-width: 768px) {
+  .next-race-bg-photo {
+    width: 100%;
+    opacity: 0.32;
+  }
+  .watch-live-hero-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 20px;
+  }
+}
 
 /* countdown timer */
 .countdown-box { margin-bottom: 20px; }
@@ -1374,6 +1477,52 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   position: relative;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
+}
+
+.big-race-tile.has-track-bg {
+  position: relative;
+  background-color: #0b0e16;
+}
+
+.tile-bg-photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.big-race-tile:hover .tile-bg-photo {
+  opacity: 0.38;
+  transform: scale(1.03);
+}
+
+.tile-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(11, 14, 22, 0.4) 0%, rgba(11, 14, 22, 0.88) 75%, #0b0e16 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tile-top-bar,
+.tile-header,
+.tile-track-preview,
+.tile-stats-strip,
+.tile-footer,
+.tile-action-row,
+.tile-drawer {
+  position: relative;
+  z-index: 2;
 }
 
 .big-race-tile:hover {
