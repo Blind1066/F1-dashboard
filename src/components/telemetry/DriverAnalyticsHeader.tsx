@@ -36,6 +36,8 @@ interface DriverAnalyticsHeaderProps {
   onSelectPrimaryDriver: (driverNumber: number) => void;
   onSelectCompareDriver: (driverNumber: number | null) => void;
   onBackToClassification?: () => void;
+  onCloseModal?: () => void;
+  isFullscreenWindow?: boolean;
 }
 
 export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
@@ -47,32 +49,77 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
   onSelectPrimaryDriver,
   onSelectCompareDriver,
   onBackToClassification,
+  onCloseModal,
 }) => {
+  const [isBrowserFullscreen, setIsBrowserFullscreen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleFsChange = () => {
+      setIsBrowserFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
+
+  const toggleBrowserFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
   const teamColor = primaryDriver.colour || getTeamColour(primaryDriver.team);
   const compareTeamColor = compareDriver?.colour || (compareDriver ? getTeamColour(compareDriver.team) : "#666");
 
   return (
     <header className="telemetry-header">
-      {/* Top Bar with Back navigation & Session Badge */}
+      {/* Top Bar with Back navigation, Session Badge & Fullscreen controls */}
       <div className="telemetry-top-nav">
-        {onBackToClassification && (
+        <div className="telemetry-top-nav-left">
+          {onBackToClassification && (
+            <button
+              type="button"
+              className="back-btn"
+              onClick={onBackToClassification}
+              title="Return to full race classification"
+            >
+              <span>←</span>
+              <span>Back to Classification</span>
+            </button>
+          )}
+
+          <div className="telemetry-session-tag">
+            <span className="live-radar-dot" />
+            <span className="session-gp">{grandPrixName}</span>
+            <span className="sep">•</span>
+            <span className="session-type">{sessionName}</span>
+            <span className="badge-official">PITWALL TELEMETRY</span>
+          </div>
+        </div>
+
+        <div className="telemetry-top-nav-right">
           <button
             type="button"
-            className="back-btn"
-            onClick={onBackToClassification}
-            title="Return to full race classification"
+            className="telemetry-action-pill-btn"
+            onClick={toggleBrowserFullscreen}
+            title={isBrowserFullscreen ? "Exit Fullscreen" : "Toggle Fullscreen"}
           >
-            <span>←</span>
-            <span>Back to Classification</span>
+            <span>{isBrowserFullscreen ? "🗗" : "⛶"}</span>
+            <span>{isBrowserFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
           </button>
-        )}
 
-        <div className="telemetry-session-tag">
-          <span className="live-radar-dot" />
-          <span className="session-gp">{grandPrixName}</span>
-          <span className="sep">•</span>
-          <span className="session-type">{sessionName}</span>
-          <span className="badge-official">PITWALL TELEMETRY</span>
+          {onCloseModal && (
+            <button
+              type="button"
+              className="telemetry-action-pill-btn close"
+              onClick={onCloseModal}
+              title="Close telemetry window"
+            >
+              <span>✕</span>
+              <span>Close</span>
+            </button>
+          )}
         </div>
       </div>
 

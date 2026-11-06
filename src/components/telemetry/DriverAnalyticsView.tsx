@@ -34,6 +34,8 @@ interface DriverAnalyticsViewProps {
   initialDriverNumber?: number;
   raceDetails?: FullRaceDetails | null;
   onBackToClassification?: () => void;
+  onCloseModal?: () => void;
+  isFullscreenWindow?: boolean;
   sessionKey?: number; // OpenF1 session key if available (default 9636 for São Paulo / 9662 for Abu Dhabi)
 }
 
@@ -51,6 +53,8 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   initialDriverNumber = 4,
   raceDetails,
   onBackToClassification,
+  onCloseModal,
+  isFullscreenWindow = false,
   sessionKey = 9636, // 2024 São Paulo GP default
 }) => {
   const [activeTab, setActiveTab] = useState<AnalyticsTabType>("overview");
@@ -229,6 +233,8 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         onSelectPrimaryDriver={setPrimaryDriverNumber}
         onSelectCompareDriver={setCompareDriverNumber}
         onBackToClassification={onBackToClassification}
+        onCloseModal={onCloseModal}
+        isFullscreenWindow={isFullscreenWindow}
       />
 
       {/* 2. Seven Navigation Tabs */}

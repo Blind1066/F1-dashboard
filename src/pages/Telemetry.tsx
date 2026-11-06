@@ -24,7 +24,7 @@ export const Telemetry: React.FC = () => {
   const currentPreset = PRESET_SESSIONS.find((s) => s.key === selectedSessionKey) || PRESET_SESSIONS[0];
 
   return (
-    <div className="wrap telemetry-page-wrap">
+    <div className="telemetry-fullscreen-page">
       {/* Top Session Picker Banner */}
       <section className="telemetry-session-bar" aria-label="Grand Prix Session Selection">
         <div className="ts-left">

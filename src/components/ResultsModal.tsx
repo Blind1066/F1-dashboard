@@ -17,6 +17,7 @@ type TabType = "race" | "qualifying" | "sprint";
 export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>("race");
   const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
+  const [isModalMaximized, setIsModalMaximized] = useState(false);
 
   // Close on Escape key press
   useEffect(() => {
@@ -60,6 +61,28 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
   const fastestLapRow = details?.results?.find((r) => r.fastestLap?.rank === 1) || details?.results?.[0];
   const totalLaps = winner?.laps || 0;
 
+  // When a driver row is clicked, open the dedicated FULLSCREEN WINDOW!
+  if (selectedDriverId) {
+    return (
+      <div
+        className="telemetry-fullscreen-window"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Full-Screen Driver Telemetry Window"
+      >
+        <div className="telemetry-fullscreen-inner">
+          <DriverAnalyticsView
+            initialDriverId={selectedDriverId}
+            raceDetails={details}
+            onBackToClassification={() => setSelectedDriverId(null)}
+            onCloseModal={onClose}
+            isFullscreenWindow={true}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="modal-backdrop"
@@ -69,7 +92,7 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
       aria-labelledby="results-modal-title"
     >
       <div
-        className="results-modal"
+        className={`results-modal${isModalMaximized ? " maximized" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -104,14 +127,24 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
             </div>
           </div>
 
-          <button
-            type="button"
-            className="modal-close-btn"
-            onClick={onClose}
-            aria-label="Close race results"
-          >
-            ✕
-          </button>
+          <div className="modal-header-actions">
+            <button
+              type="button"
+              className="modal-action-btn"
+              onClick={() => setIsModalMaximized((prev) => !prev)}
+              title={isModalMaximized ? "Restore window size" : "Expand to Fullscreen"}
+            >
+              {isModalMaximized ? "🗗" : "⛶"}
+            </button>
+            <button
+              type="button"
+              className="modal-close-btn"
+              onClick={onClose}
+              aria-label="Close race results"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Highlights / Fast-F1 telemetry summaries with driver images */}
@@ -214,15 +247,9 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
           </div>
         )}
 
-        {/* Modal Body / Tables OR Driver Analytics View */}
+        {/* Modal Body / Classification Tables */}
         <div className="modal-body">
-          {selectedDriverId ? (
-            <DriverAnalyticsView
-              initialDriverId={selectedDriverId}
-              raceDetails={details}
-              onBackToClassification={() => setSelectedDriverId(null)}
-            />
-          ) : isLoading ? (
+          {isLoading ? (
             <div style={{ padding: "24px", display: "grid", gap: "8px" }}>
               <SkeletonRows count={8} />
             </div>
