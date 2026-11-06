@@ -5,6 +5,7 @@ import { getDemoRaceResults } from "../api/demo";
 import type { FullRaceDetails } from "../types";
 import { Avatar } from "./Avatar";
 import { SkeletonRows } from "./Skeleton";
+import { DriverAnalyticsView } from "./telemetry/DriverAnalyticsView";
 
 interface ResultsModalProps {
   round: number | null;
@@ -15,6 +16,7 @@ type TabType = "race" | "qualifying" | "sprint";
 
 export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>("race");
+  const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
 
   // Close on Escape key press
   useEffect(() => {
@@ -212,9 +214,15 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
           </div>
         )}
 
-        {/* Modal Body / Tables */}
+        {/* Modal Body / Tables OR Driver Analytics View */}
         <div className="modal-body">
-          {isLoading ? (
+          {selectedDriverId ? (
+            <DriverAnalyticsView
+              initialDriverId={selectedDriverId}
+              raceDetails={details}
+              onBackToClassification={() => setSelectedDriverId(null)}
+            />
+          ) : isLoading ? (
             <div style={{ padding: "24px", display: "grid", gap: "8px" }}>
               <SkeletonRows count={8} />
             </div>
@@ -238,7 +246,12 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
               </thead>
               <tbody>
                 {details.results.map((row) => (
-                  <tr key={row.driver.id}>
+                  <tr
+                    key={row.driver.id}
+                    className="clickable-driver-row"
+                    onClick={() => setSelectedDriverId(row.driver.id)}
+                    title={`Click to explore in-depth telemetry & performance analytics for ${row.driver.name}`}
+                  >
                     <td style={{ fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
                       {row.positionText}
                     </td>
@@ -249,7 +262,10 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
                           headshotUrl={row.driver.headshot}
                         />
                         <div className="name-block">
-                          <span className="driver-fullname">{row.driver.name}</span>
+                          <div className="driver-fullname-line">
+                            <span className="driver-fullname">{row.driver.name}</span>
+                            <span className="telemetry-row-chip">📊 Telemetry →</span>
+                          </div>
                           <span className="driver-subtext">
                             <span>#{row.driver.number}</span>
                             <span>{row.driver.code}</span>
@@ -326,7 +342,12 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
               </thead>
               <tbody>
                 {details.qualifying.map((row) => (
-                  <tr key={row.driver.id}>
+                  <tr
+                    key={row.driver.id}
+                    className="clickable-driver-row"
+                    onClick={() => setSelectedDriverId(row.driver.id)}
+                    title={`Click to explore in-depth telemetry & performance analytics for ${row.driver.name}`}
+                  >
                     <td style={{ fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
                       {row.position}
                     </td>
@@ -337,7 +358,10 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
                           headshotUrl={row.driver.headshot}
                         />
                         <div className="name-block">
-                          <span className="driver-fullname">{row.driver.name}</span>
+                          <div className="driver-fullname-line">
+                            <span className="driver-fullname">{row.driver.name}</span>
+                            <span className="telemetry-row-chip">📊 Telemetry →</span>
+                          </div>
                           <span className="driver-subtext">
                             <span>#{row.driver.number}</span>
                             <span>{row.driver.code}</span>
@@ -378,7 +402,12 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
               </thead>
               <tbody>
                 {details.sprint.map((row) => (
-                  <tr key={row.driver.id}>
+                  <tr
+                    key={row.driver.id}
+                    className="clickable-driver-row"
+                    onClick={() => setSelectedDriverId(row.driver.id)}
+                    title={`Click to explore in-depth telemetry & performance analytics for ${row.driver.name}`}
+                  >
                     <td style={{ fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
                       {row.positionText}
                     </td>
@@ -389,7 +418,10 @@ export const ResultsModal: React.FC<ResultsModalProps> = ({ round, onClose }) =>
                           headshotUrl={row.driver.headshot}
                         />
                         <div className="name-block">
-                          <span className="driver-fullname">{row.driver.name}</span>
+                          <div className="driver-fullname-line">
+                            <span className="driver-fullname">{row.driver.name}</span>
+                            <span className="telemetry-row-chip">📊 Telemetry →</span>
+                          </div>
                           <span className="driver-subtext">
                             <span>#{row.driver.number}</span>
                             <span>{row.driver.code}</span>

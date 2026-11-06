@@ -3394,3 +3394,1279 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: #4a5060;
   text-transform: uppercase;
 }
+
+/* --------------------------------------------------------------------------
+   PITWALL — Interactive Driver Telemetry & Performance Analytics
+   -------------------------------------------------------------------------- */
+
+/* Clickable classification rows with telemetry hint */
+.clickable-driver-row {
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  position: relative;
+}
+
+.clickable-driver-row:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface)) !important;
+}
+
+.clickable-driver-row:hover td:first-child {
+  border-left: 3px solid var(--accent);
+}
+
+.driver-fullname-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetry-row-chip {
+  display: inline-flex;
+  align-items: center;
+  font: 700 9px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(225, 6, 0, 0.15);
+  color: #ff453a;
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+}
+
+.clickable-driver-row:hover .telemetry-row-chip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Standalone Telemetry Page Container */
+.telemetry-page-wrap {
+  padding-top: 20px;
+  padding-bottom: 60px;
+}
+
+.telemetry-session-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ts-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ts-badge {
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+  font: 800 11px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 6px;
+}
+
+.ts-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ts-gp-title {
+  font: 700 18px var(--display);
+  color: var(--text);
+  letter-spacing: .02em;
+}
+
+.ts-gp-circuit {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ts-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ts-select-label {
+  font: 600 12px var(--display);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.ts-dropdown {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font: 600 13px var(--display);
+  cursor: pointer;
+}
+
+/* Driver Analytics Header */
+.telemetry-header {
+  margin-bottom: 20px;
+}
+
+.telemetry-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 6px;
+  font: 700 12px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.back-btn:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateX(-2px);
+}
+
+.telemetry-session-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.telemetry-session-tag .session-gp {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.badge-official {
+  font: 800 10px var(--display);
+  letter-spacing: .08em;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+.telemetry-profile-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.driver-identity-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.driver-photo-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid;
+  padding: 2px;
+  flex-shrink: 0;
+  background: var(--surface-2);
+}
+
+.driver-photo-wrap .avatar {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+}
+
+.driver-num-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font: 800 11px var(--display);
+  color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.driver-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.driver-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.driver-heading {
+  font: 800 24px/1.1 var(--display);
+  letter-spacing: .02em;
+  color: var(--text);
+  margin: 0;
+}
+
+.driver-nat-badge {
+  font: 700 11px var(--display);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.driver-team-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.team-pill-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.code-pill {
+  font: 700 10px var(--display);
+  letter-spacing: .06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Quick Performance Metrics Badges */
+.quick-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 900px) {
+  .quick-stats-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 550px) {
+  .quick-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.qstat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.qstat-lbl {
+  font: 600 10px var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.qstat-val {
+  font: 700 15px var(--display);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.qstat-val.pos-highlight {
+  color: var(--accent);
+}
+
+.qstat-val.purple {
+  color: #c084fc;
+}
+
+/* Driver Selectors Dropdowns */
+.driver-selectors-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.selector-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selector-label {
+  font: 700 11px var(--display);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+.driver-select-dropdown {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font: 600 12px var(--display);
+  cursor: pointer;
+}
+
+.driver-select-dropdown.compare {
+  border-color: #64c4ff;
+}
+
+/* 7 Tabs Navigation Bar */
+.telemetry-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.ttab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  font: 700 12px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.ttab-btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.ttab-btn.active {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Telemetry Control Bar & Channel filters */
+.telemetry-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.lap-selector-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-label {
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lap-picker-select {
+  background: var(--surface);
+  border: 1.5px solid var(--accent);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font: 700 12px var(--display);
+  cursor: pointer;
+}
+
+.channel-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+.telemetry-legend-indicators {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legend-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 11px var(--display);
+  color: var(--text);
+}
+
+.legend-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Telemetry Stats Row */
+.telemetry-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 800px) {
+  .telemetry-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tstat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tstat-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tstat-label {
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.tstat-value {
+  font: 800 22px/1.1 var(--display);
+  color: var(--text);
+}
+
+.tstat-value .unit {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.tstat-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Charts Containers */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 14px var(--display);
+  letter-spacing: .04em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.chart-badge {
+  font: 800 10px var(--display);
+  letter-spacing: .08em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.chart-badge.throttle {
+  background: rgba(48, 209, 88, 0.15);
+  color: #30d158;
+  border-color: rgba(48, 209, 88, 0.35);
+}
+
+.chart-badge.gear {
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
+  border-color: rgba(192, 132, 252, 0.35);
+}
+
+.chart-badge.tyre {
+  background: rgba(255, 214, 10, 0.15);
+  color: #ffd60a;
+  border-color: rgba(255, 214, 10, 0.35);
+}
+
+.chart-badge.delta {
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
+  border-color: rgba(192, 132, 252, 0.35);
+}
+
+.chart-meta {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gear-distribution-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  flex-wrap: wrap;
+}
+
+.strip-title {
+  font: 700 11px var(--display);
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.gear-dist-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.g-lbl {
+  font-weight: 700;
+  color: #c084fc;
+}
+
+.g-val {
+  color: var(--muted);
+}
+
+/* F1 Dark Synchronized Tooltip */
+.f1-chart-tooltip {
+  background: rgba(12, 14, 18, 0.96);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.tt-dist {
+  font: 700 11px var(--display);
+  color: var(--muted);
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+}
+
+.tt-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.tt-delta {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--line);
+  font: 700 11px var(--display);
+  color: #30d158;
+}
+
+/* Lap Analysis Tab */
+.lap-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 800px) {
+  .lap-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.lstat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.lstat-card.fastest {
+  border-color: rgba(192, 132, 252, 0.4);
+  background: radial-gradient(circle at top right, rgba(192, 132, 252, 0.08), var(--surface));
+}
+
+.lstat-label {
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.lstat-val {
+  font: 800 20px var(--display);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lstat-val.green {
+  color: #30d158;
+}
+
+.lstat-val.gold {
+  color: #ffd60a;
+}
+
+.lstat-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.lap-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.lap-table-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-subtitle {
+  font: 700 15px var(--display);
+  letter-spacing: .04em;
+  color: var(--text);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.table-hint {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.f1-lap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.f1-lap-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.f1-lap-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+}
+
+.lap-row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.lap-row:hover {
+  background: var(--surface-2);
+}
+
+.lap-row.selected {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface)) !important;
+}
+
+.lap-row.fastest-lap td {
+  color: #c084fc;
+}
+
+.pb-green {
+  color: #30d158;
+  font-weight: 700;
+}
+
+.fl-purple-badge {
+  font: 700 10px var(--display);
+  padding: 1px 5px;
+  background: rgba(192, 132, 252, 0.2);
+  border-radius: 4px;
+  color: #c084fc;
+  margin-left: 6px;
+}
+
+.best-mark {
+  font: 800 10px var(--display);
+  color: #30d158;
+}
+
+.tyre-compound-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font: 800 11px var(--display);
+  border: 1.5px solid;
+}
+
+.tyre-compound-badge.soft {
+  color: #ff3b30;
+  border-color: #ff3b30;
+}
+
+.tyre-compound-badge.medium {
+  color: #ffd60a;
+  border-color: #ffd60a;
+}
+
+.tyre-compound-badge.hard {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.pit-badge {
+  font: 700 9px var(--display);
+  padding: 2px 6px;
+  background: rgba(255, 214, 10, 0.2);
+  color: #ffd60a;
+  border-radius: 3px;
+}
+
+.clean-badge {
+  font: 600 9px var(--display);
+  color: var(--muted);
+}
+
+/* Tyre Stint Timeline */
+.stint-timeline-wrap {
+  padding: 12px 0;
+}
+
+.stint-timeline-bar {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.stint-segment {
+  border-left: 4px solid;
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stint-top-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stint-badge {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 800 10px var(--display);
+}
+
+.stint-num {
+  font: 700 11px var(--display);
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+
+.stint-compound-name {
+  font: 800 15px var(--display);
+  color: var(--text);
+}
+
+.stint-laps-range {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.compound-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 750px) {
+  .compound-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.compound-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.csc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.compound-color-pill {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.csc-name {
+  font: 700 11px var(--display);
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.csc-val {
+  font: 800 20px var(--display);
+  color: var(--text);
+}
+
+.csc-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.deg-factor {
+  color: #ffd60a;
+  font-weight: 600;
+}
+
+.degradation-advisory-note {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Driver Comparison Tab */
+.comparison-picker-bar {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.compare-versus-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.driver-pill-badge {
+  font: 800 15px var(--display);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1.5px solid;
+  background: var(--surface-2);
+}
+
+.vs-badge {
+  font: 800 12px var(--display);
+  color: var(--muted);
+}
+
+.quick-driver-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill-lbl {
+  font: 700 11px var(--display);
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.compare-driver-pill {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font: 700 11px var(--display);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.compare-driver-pill:hover,
+.compare-driver-pill.active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.comparison-empty-state {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.comparison-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 800px) {
+  .comparison-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.comp-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.comp-card.gain {
+  border-color: rgba(48, 209, 88, 0.4);
+}
+
+.comp-card.loss {
+  border-color: rgba(255, 69, 58, 0.4);
+}
+
+.comp-lbl {
+  font: 700 11px var(--display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.comp-val {
+  font: 800 20px var(--display);
+  color: var(--text);
+}
+
+.comp-card.gain .comp-val {
+  color: #30d158;
+}
+
+.comp-card.loss .comp-val {
+  color: #ff453a;
+}
+
+.comp-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.analyst-insights-card {
+  background: linear-gradient(135deg, rgba(225, 6, 0, 0.1), var(--surface));
+  border: 1.5px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.analyst-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.analyst-title {
+  font: 800 14px var(--display);
+  letter-spacing: .04em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.analyst-badge {
+  font: 800 9px var(--display);
+  letter-spacing: .08em;
+  padding: 2px 6px;
+  background: var(--accent);
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.analyst-bullets {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Circuit Map Container */
+.circuit-telemetry-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.circuit-map-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.telemetry-scrubber-readout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.scrub-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.scrub-metric .lbl {
+  font: 600 10px var(--display);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scrub-metric .val {
+  font: 800 14px var(--display);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.circuit-canvas-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 520 / 350;
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--accent) 5%, var(--surface-2)) 0%, var(--surface-2) 80%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circuit-telemetry-svg {
+  width: 100%;
+  height: 100%;
+  padding: 14px;
+}
+
+.circuit-map-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.speed-heatmap-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(14, 16, 22, 0.88);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+.speed-heatmap-bar .gradient-bar {
+  width: 140px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #007aff, #30d158, #ffd60a, #ff453a);
+}
+
+.hl-label {
+  font: 700 10px var(--display);
+  color: var(--muted);
+}
+
+.braking-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(14, 16, 22, 0.88);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+.lap-scrubber-control {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scrubber-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.telemetry-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* Telemetry Attribution Footer */
+.telemetry-attribution-footer {
+  margin-top: 24px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  flex-wrap: wrap;
+  gap: 8px;
+}
