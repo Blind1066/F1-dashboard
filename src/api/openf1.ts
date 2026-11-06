@@ -9,9 +9,11 @@ import type {
   OpenF1Session,
   OpenF1Stint,
   OpenF1Weather,
+  ProcessedLapSummary,
   TelemetryDataPoint,
 } from "../types/telemetry";
 import {
+  formatLapTime,
   generateRealisticLapTelemetry,
 } from "./telemetryDemo";
 
@@ -256,4 +258,51 @@ export async function getHeadshots(year: number): Promise<Map<string, string>> {
   } catch {
     return new Map();
   }
+}
+
+// 13. Convert OpenF1 raw laps into processed timing laps
+export function processOpenF1Laps(
+  rawLaps: OpenF1Lap[],
+  stints: OpenF1Stint[] = []
+): ProcessedLapSummary[] {
+  if (!rawLaps || rawLaps.length === 0) return [];
+
+  const validDurations = rawLaps
+    .map((l) => l.lap_duration)
+    .filter((d): d is number => typeof d === "number" && d > 50 && d < 180);
+  const minDuration = validDurations.length > 0 ? Math.min(...validDurations) : 70;
+
+  let personalBest = 9999;
+
+  return rawLaps
+    .filter((l) => l.lap_number && l.lap_number > 0)
+    .sort((a, b) => a.lap_number - b.lap_number)
+    .map((lap) => {
+      const dur = lap.lap_duration || 0;
+      const isPB = dur > 50 && dur < personalBest;
+      if (isPB) personalBest = dur;
+
+      const matchedStint = stints.find(
+        (s) => lap.lap_number >= s.lap_start && lap.lap_number <= s.lap_end
+      );
+      const compound = matchedStint?.compound || (lap.duration_sector_1 && lap.duration_sector_1 > 28 ? "INTERMEDIATE" : "MEDIUM");
+      const tyreAge = matchedStint ? Math.max(1, lap.lap_number - matchedStint.lap_start + 1) : lap.lap_number;
+
+      return {
+        lapNumber: lap.lap_number,
+        lapDuration: dur,
+        lapDurationDisplay: dur > 0 ? formatLapTime(dur) : "-",
+        s1: lap.duration_sector_1 ? Number(lap.duration_sector_1.toFixed(3)) : undefined,
+        s2: lap.duration_sector_2 ? Number(lap.duration_sector_2.toFixed(3)) : undefined,
+        s3: lap.duration_sector_3 ? Number(lap.duration_sector_3.toFixed(3)) : undefined,
+        compound,
+        tyreAge,
+        speedTrap: lap.st_speed ? Math.round(lap.st_speed) : undefined,
+        i1Speed: lap.i1_speed ? Math.round(lap.i1_speed) : undefined,
+        i2Speed: lap.i2_speed ? Math.round(lap.i2_speed) : undefined,
+        isPersonalBest: isPB,
+        isOverallFastest: dur > 0 && Math.abs(dur - minDuration) < 0.005,
+        isPitOut: lap.is_pit_out_lap,
+      };
+    });
 }

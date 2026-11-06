@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DriverAnalyticsView } from "../components/telemetry/DriverAnalyticsView";
+import { getSessions } from "../api/openf1";
+import type { OpenF1Session } from "../types/telemetry";
 
 interface SessionPreset {
   key: number;
@@ -20,18 +22,37 @@ const PRESET_SESSIONS: SessionPreset[] = [
 
 export const Telemetry: React.FC = () => {
   const [selectedSessionKey, setSelectedSessionKey] = useState<number>(9636);
+  const [realSessions, setRealSessions] = useState<OpenF1Session[]>([]);
 
+  useEffect(() => {
+    getSessions(2024, "Race").then((sess) => {
+      if (sess && sess.length > 0) {
+        setRealSessions(sess);
+      }
+    });
+  }, []);
+
+  const currentRealSession = realSessions.find((s) => s.session_key === selectedSessionKey);
   const currentPreset = PRESET_SESSIONS.find((s) => s.key === selectedSessionKey) || PRESET_SESSIONS[0];
+
+  const gpName = currentRealSession
+    ? `${currentRealSession.circuit_short_name || currentRealSession.country_name} Grand Prix`
+    : currentPreset.name;
+  const gpCircuit = currentRealSession
+    ? `${currentRealSession.circuit_short_name} (${currentRealSession.location})`
+    : currentPreset.circuit;
+  const gpCountry = currentRealSession ? currentRealSession.country_name : currentPreset.country;
+  const gpYear = currentRealSession ? currentRealSession.year : currentPreset.year;
 
   return (
     <div className="telemetry-fullscreen-page">
       {/* Top Session Picker Banner */}
       <section className="telemetry-session-bar" aria-label="Grand Prix Session Selection">
         <div className="ts-left">
-          <div className="ts-badge">FIA F1 TELEMETRY</div>
+          <div className="ts-badge">OPENF1 API LIVE</div>
           <div className="ts-info">
-            <span className="ts-gp-title">{currentPreset.name} {currentPreset.year}</span>
-            <span className="ts-gp-circuit">📍 {currentPreset.circuit} · {currentPreset.country}</span>
+            <span className="ts-gp-title">{gpName} {gpYear}</span>
+            <span className="ts-gp-circuit">📍 {gpCircuit} · {gpCountry} · Session #{selectedSessionKey}</span>
           </div>
         </div>
 
@@ -43,11 +64,17 @@ export const Telemetry: React.FC = () => {
             value={selectedSessionKey}
             onChange={(e) => setSelectedSessionKey(Number(e.target.value))}
           >
-            {PRESET_SESSIONS.map((s) => (
-              <option key={s.key} value={s.key}>
-                {s.year} {s.name} ({s.country})
-              </option>
-            ))}
+            {realSessions.length > 0
+              ? realSessions.map((s) => (
+                  <option key={s.session_key} value={s.session_key}>
+                    {s.year} {s.country_name} GP ({s.circuit_short_name})
+                  </option>
+                ))
+              : PRESET_SESSIONS.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.year} {s.name} ({s.country})
+                  </option>
+                ))}
           </select>
         </div>
       </section>
@@ -55,7 +82,8 @@ export const Telemetry: React.FC = () => {
       {/* Main Full-Featured Driver Analytics View */}
       <DriverAnalyticsView
         sessionKey={selectedSessionKey}
-        initialDriverNumber={4} // Norris by default
+        initialDriverNumber={1} // Verstappen by default (winner of 9636)
+        isFullscreenWindow={true}
       />
     </div>
   );

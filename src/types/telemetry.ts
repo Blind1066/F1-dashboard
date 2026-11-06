@@ -174,12 +174,12 @@ export interface ProcessedLapSummary {
   lapNumber: number;
   lapDuration: number;
   lapDurationDisplay: string;
-  s1: number | null;
-  s2: number | null;
-  s3: number | null;
-  speedTrap: number | null;
-  i1Speed: number | null;
-  i2Speed: number | null;
+  s1?: number | null;
+  s2?: number | null;
+  s3?: number | null;
+  speedTrap?: number | null;
+  i1Speed?: number | null;
+  i2Speed?: number | null;
   compound: string;
   tyreAge: number;
   isPitOut: boolean;
