@@ -73,7 +73,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   onBackToClassification,
   onCloseModal,
   isFullscreenWindow = false,
-  sessionKey = 9636, // 2024 São Paulo GP default
+  sessionKey = 9636, // São Paulo GP fallback session default
   sessionName,
   circuitName,
   countryName,

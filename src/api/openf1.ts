@@ -107,7 +107,7 @@ export async function fetchOpenF1<T>(endpoint: string, timeoutMs = 8000, maxRetr
 }
 
 // 1. Sessions
-export async function getSessions(year = 2024, sessionName = "Race"): Promise<OpenF1Session[]> {
+export async function getSessions(year = 2026, sessionName = "Race"): Promise<OpenF1Session[]> {
   try {
     const data = await fetchOpenF1<OpenF1Session[]>(`sessions?year=${year}&session_name=${encodeURIComponent(sessionName)}`);
     return Array.isArray(data) ? data : [];

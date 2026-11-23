@@ -4,10 +4,10 @@ import { DriverAnalyticsView } from "../components/telemetry/DriverAnalyticsView
 import { getSessions } from "../api/openf1";
 import type { OpenF1Session } from "../types/telemetry";
 
-const FALLBACK_SESSION_KEY = 9636; // 2024 São Paulo GP fallback
+const FALLBACK_SESSION_KEY = 9636; // São Paulo GP fallback
 
 export const Telemetry: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [selectedSessionKey, setSelectedSessionKey] = useState<number>(FALLBACK_SESSION_KEY);
 
   // Load OpenF1 sessions for the selected year and session_name=Race
@@ -65,8 +65,7 @@ export const Telemetry: React.FC = () => {
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
               >
-                <option value={2024}>2024</option>
-                <option value={2023}>2023</option>
+                <option value={2026}>2026</option>
               </select>
             </label>
 
