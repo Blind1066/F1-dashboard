@@ -49,7 +49,10 @@ interface DriverAnalyticsViewProps {
   onBackToClassification?: () => void;
   onCloseModal?: () => void;
   isFullscreenWindow?: boolean;
-  sessionKey?: number; // OpenF1 session key if available (default 9636 for São Paulo / 9662 for Abu Dhabi)
+  sessionKey?: number; // OpenF1 session key if available (default 9636 for São Paulo)
+  sessionName?: string;
+  circuitName?: string;
+  countryName?: string;
 }
 
 type AnalyticsTabType =
@@ -69,6 +72,9 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   onCloseModal,
   isFullscreenWindow = false,
   sessionKey = 9636, // 2024 São Paulo GP default
+  sessionName,
+  circuitName,
+  countryName,
 }) => {
   const [activeTab, setActiveTab] = useState<AnalyticsTabType>("overview");
 
@@ -455,8 +461,10 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return getDriverPositions(compareDriverInfo.number, lapsA.length || 71);
   }, [compareDriverInfo, lapsA.length]);
 
-  const grandPrixTitle = raceDetails?.raceName || "Brazilian Grand Prix";
-  const sessionTitle = "Official Race Classification · Interlagos";
+  const grandPrixTitle =
+    raceDetails?.raceName ||
+    (countryName ? `${countryName} Grand Prix` : "Brazilian Grand Prix");
+  const sessionTitle = sessionName || (circuitName ? `Official Race · ${circuitName}` : "Official Race Classification · Interlagos");
 
   return (
     <div className="driver-analytics-root">
