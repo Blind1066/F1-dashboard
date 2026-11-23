@@ -20,90 +20,203 @@ import {
 
 const OPENF1_BASE = "https://api.openf1.org/v1";
 
+export class OpenF1Error extends Error {
+  constructor(
+    message: string,
+    public type: "network" | "http" | "empty_data",
+    public status?: number,
+    public endpoint?: string
+  ) {
+    super(message);
+    this.name = "OpenF1Error";
+  }
+}
+
 // In-memory cache to prevent duplicate network calls
 const cache = new Map<string, { timestamp: number; data: unknown }>();
 const CACHE_TTL_MS = 1000 * 60 * 30; // 30 minutes
 
-async function fetchOpenF1<T>(endpoint: string, timeoutMs = 8000): Promise<T | null> {
+export async function fetchOpenF1<T>(endpoint: string, timeoutMs = 8000, maxRetries = 3): Promise<T> {
   const cacheKey = `openf1:${endpoint}`;
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data as T;
   }
 
-  const ctl = new AbortController();
-  const timeoutId = setTimeout(() => ctl.abort(), timeoutMs);
+  let lastError: Error | null = null;
 
-  try {
-    const res = await fetch(`${OPENF1_BASE}/${endpoint}`, { signal: ctl.signal });
-    if (!res.ok) return null;
-    const data = (await res.json()) as T;
-    cache.set(cacheKey, { timestamp: Date.now(), data });
-    return data;
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timeoutId);
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      // Exponential backoff with jitter: 300ms, 600ms, 1200ms...
+      const delay = Math.min(300 * Math.pow(2, attempt - 1), 3000);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+    const ctl = new AbortController();
+    const timeoutId = setTimeout(() => ctl.abort(), timeoutMs);
+
+    try {
+      const res = await fetch(`${OPENF1_BASE}/${endpoint}`, { signal: ctl.signal });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          lastError = new OpenF1Error(`OpenF1 Rate Limited (429) on ${endpoint}`, "http", 429, endpoint);
+          continue; // Retry on 429
+        }
+        if (res.status >= 500) {
+          lastError = new OpenF1Error(`OpenF1 Server Error (${res.status}) on ${endpoint}`, "http", res.status, endpoint);
+          continue; // Retry on server 5xx
+        }
+        // Client errors (400, 404, etc.) do not retry
+        throw new OpenF1Error(`OpenF1 HTTP ${res.status}: ${res.statusText} on ${endpoint}`, "http", res.status, endpoint);
+      }
+
+      const data = (await res.json()) as T;
+
+      // Distinguish empty data
+      if (data === null || data === undefined || (Array.isArray(data) && data.length === 0)) {
+        throw new OpenF1Error(`OpenF1 returned empty data for ${endpoint}`, "empty_data", 200, endpoint);
+      }
+
+      cache.set(cacheKey, { timestamp: Date.now(), data });
+      return data;
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+
+      if (err instanceof OpenF1Error && (err.type === "empty_data" || (err.type === "http" && err.status && err.status < 500 && err.status !== 429))) {
+        throw err;
+      }
+
+      if (err instanceof Error && err.name === "AbortError") {
+        lastError = new OpenF1Error(`OpenF1 network timeout (${timeoutMs}ms) on ${endpoint}`, "network", undefined, endpoint);
+      } else if (err instanceof OpenF1Error) {
+        lastError = err;
+      } else {
+        lastError = new OpenF1Error(
+          err instanceof Error ? err.message : `Network failure fetching ${endpoint}`,
+          "network",
+          undefined,
+          endpoint
+        );
+      }
+    }
   }
+
+  throw lastError || new OpenF1Error(`Failed fetching ${endpoint} after ${maxRetries} retries`, "network", undefined, endpoint);
 }
 
 // 1. Sessions
 export async function getSessions(year = 2024, sessionName = "Race"): Promise<OpenF1Session[]> {
-  const data = await fetchOpenF1<OpenF1Session[]>(`sessions?year=${year}&session_name=${encodeURIComponent(sessionName)}`);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Session[]>(`sessions?year=${year}&session_name=${encodeURIComponent(sessionName)}`);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getSessions error:", err);
+    return [];
+  }
 }
 
 // 2. Drivers
 export async function getDrivers(sessionKey: number): Promise<OpenF1Driver[]> {
-  const data = await fetchOpenF1<OpenF1Driver[]>(`drivers?session_key=${sessionKey}`);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Driver[]>(`drivers?session_key=${sessionKey}`);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getDrivers error:", err);
+    return [];
+  }
 }
 
 // 3. Laps
 export async function getLaps(sessionKey: number, driverNumber?: number): Promise<OpenF1Lap[]> {
   const q = driverNumber ? `laps?session_key=${sessionKey}&driver_number=${driverNumber}` : `laps?session_key=${sessionKey}`;
-  const data = await fetchOpenF1<OpenF1Lap[]>(q);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Lap[]>(q);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getLaps error:", err);
+    return [];
+  }
 }
 
 // 4. Stints
 export async function getStints(sessionKey: number, driverNumber?: number): Promise<OpenF1Stint[]> {
   const q = driverNumber ? `stints?session_key=${sessionKey}&driver_number=${driverNumber}` : `stints?session_key=${sessionKey}`;
-  const data = await fetchOpenF1<OpenF1Stint[]>(q);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Stint[]>(q);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getStints error:", err);
+    return [];
+  }
 }
 
 // 5. Pit Stops
 export async function getPitStops(sessionKey: number, driverNumber?: number): Promise<OpenF1Pit[]> {
   const q = driverNumber ? `pit?session_key=${sessionKey}&driver_number=${driverNumber}` : `pit?session_key=${sessionKey}`;
-  const data = await fetchOpenF1<OpenF1Pit[]>(q);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Pit[]>(q);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getPitStops error:", err);
+    return [];
+  }
 }
 
 // 6. Intervals
 export async function getIntervals(sessionKey: number, driverNumber?: number): Promise<OpenF1Interval[]> {
   const q = driverNumber ? `intervals?session_key=${sessionKey}&driver_number=${driverNumber}` : `intervals?session_key=${sessionKey}`;
-  const data = await fetchOpenF1<OpenF1Interval[]>(q);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Interval[]>(q);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getIntervals error:", err);
+    return [];
+  }
 }
 
 // 7. Position Progression
 export async function getPositions(sessionKey: number, driverNumber?: number): Promise<OpenF1Position[]> {
   const q = driverNumber ? `position?session_key=${sessionKey}&driver_number=${driverNumber}` : `position?session_key=${sessionKey}`;
-  const data = await fetchOpenF1<OpenF1Position[]>(q);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Position[]>(q);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getPositions error:", err);
+    return [];
+  }
 }
 
 // 8. Race Control (Flags, VSC, SC)
 export async function getRaceControl(sessionKey: number): Promise<OpenF1RaceControl[]> {
-  const data = await fetchOpenF1<OpenF1RaceControl[]>(`race_control?session_key=${sessionKey}`);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1RaceControl[]>(`race_control?session_key=${sessionKey}`);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getRaceControl error:", err);
+    return [];
+  }
 }
 
 // 9. Weather
 export async function getWeather(sessionKey: number): Promise<OpenF1Weather[]> {
-  const data = await fetchOpenF1<OpenF1Weather[]>(`weather?session_key=${sessionKey}`);
-  return data && Array.isArray(data) ? data : [];
+  try {
+    const data = await fetchOpenF1<OpenF1Weather[]>(`weather?session_key=${sessionKey}`);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    if (err instanceof OpenF1Error && err.type === "empty_data") return [];
+    console.warn("getWeather error:", err);
+    return [];
+  }
 }
 
 // 10. Car Data for an individual Lap

@@ -27,7 +27,6 @@ export const Standings: React.FC = () => {
   const racesQuery = useQuery({
     queryKey: ["races", year],
     queryFn: () => getRaces(year),
-    staleTime: Infinity,
     gcTime: 1000 * 60 * 60 * 24,
     retry: 1,
   });
@@ -62,7 +61,6 @@ export const Standings: React.FC = () => {
     queryKey: ["standings", year, round],
     queryFn: () => (round !== null ? getStandings(year, round) : Promise.resolve(null)),
     enabled: round !== null && !isRacesError,
-    staleTime: Infinity,
     gcTime: 1000 * 60 * 60 * 24,
     retry: 1,
   });
