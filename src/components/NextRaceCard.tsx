@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import type { ScheduleRace } from "../types";
 import { getTrackPhoto, formatWeekendRange } from "../utils/trackPhotos";
 
@@ -108,16 +107,6 @@ export const NextRaceCard: React.FC<NextRaceCardProps> = ({ race }) => {
               <span className="venue-loc">{race.circuit.city}, {race.circuit.country}</span>
             </div>
           </div>
-
-          {/* WATCH LIVE CTA Button */}
-          <Link
-            to="/live"
-            className="watch-live-hero-btn"
-            title="Launch Interactive Live Driver Telemetry & Pitwall"
-          >
-            <span className="watch-live-text">WATCH LIVE</span>
-            <span className="watch-live-icon">▶</span>
-          </Link>
         </div>
 
         {/* Countdown to Lights Out */}

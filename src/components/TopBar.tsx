@@ -63,12 +63,6 @@ export const TopBar: React.FC = () => {
               News
             </NavLink>
             <NavLink
-              to="/live"
-              className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
-            >
-              Live
-            </NavLink>
-            <NavLink
               to="/telemetry"
               className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
               title="Interactive Driver Telemetry & Performance Analytics"
