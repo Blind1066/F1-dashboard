@@ -41,6 +41,9 @@ interface DriverAnalyticsHeaderProps {
   onBackToClassification?: () => void;
   onCloseModal?: () => void;
   isFullscreenWindow?: boolean;
+  onDownloadLapsCsv?: () => void;
+  onDownloadStintsCsv?: () => void;
+  onDownloadTelemetryCsv?: () => void;
 }
 
 export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
@@ -54,6 +57,9 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
   onSelectCompareDriver,
   onBackToClassification,
   onCloseModal,
+  onDownloadLapsCsv,
+  onDownloadStintsCsv,
+  onDownloadTelemetryCsv,
 }) => {
   const [isBrowserFullscreen, setIsBrowserFullscreen] = React.useState(false);
 
@@ -106,6 +112,42 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
         </div>
 
         <div className="telemetry-top-nav-right">
+          {onDownloadLapsCsv && (
+            <button
+              type="button"
+              className="telemetry-action-pill-btn"
+              onClick={onDownloadLapsCsv}
+              title="Download Laps CSV for selected driver"
+            >
+              <span>📥</span>
+              <span>Laps CSV</span>
+            </button>
+          )}
+
+          {onDownloadStintsCsv && (
+            <button
+              type="button"
+              className="telemetry-action-pill-btn"
+              onClick={onDownloadStintsCsv}
+              title="Download Stints CSV for selected driver"
+            >
+              <span>📥</span>
+              <span>Stints CSV</span>
+            </button>
+          )}
+
+          {onDownloadTelemetryCsv && (
+            <button
+              type="button"
+              className="telemetry-action-pill-btn"
+              onClick={onDownloadTelemetryCsv}
+              title="Download Telemetry CSV for selected lap and driver(s)"
+            >
+              <span>📥</span>
+              <span>Telemetry CSV</span>
+            </button>
+          )}
+
           <button
             type="button"
             className="telemetry-action-pill-btn"

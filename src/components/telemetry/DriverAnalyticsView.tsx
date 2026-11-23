@@ -18,6 +18,7 @@ import { TyreDegradationTab } from "./TyreDegradationTab";
 import { RacePaceTab } from "./RacePaceTab";
 import { DriverComparisonTab } from "./DriverComparisonTab";
 import { CircuitTelemetryMap } from "./CircuitTelemetryMap";
+import { downloadCsv } from "../../utils/csvExport";
 import {
   alignTelemetryPair,
   getCarDataForLap,
@@ -473,6 +474,108 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return getDriverPositions(compareDriverInfo.number, lapsA.length || 71);
   }, [compareDriverInfo, lapsA.length]);
 
+  const handleDownloadLapsCsv = () => {
+    const headers = [
+      "Lap Number",
+      "Driver",
+      "Lap Time (s)",
+      "Lap Time Display",
+      "Sector 1 (s)",
+      "Sector 2 (s)",
+      "Sector 3 (s)",
+      "Compound",
+      "Tyre Age (laps)",
+      "Speed Trap (km/h)",
+      "Personal Best",
+      "Fastest Lap",
+      "Pit Out Lap",
+    ];
+    const rows = lapsA.map((l) => [
+      l.lapNumber,
+      primaryDriverInfo.code,
+      l.lapDuration,
+      l.lapDurationDisplay,
+      l.s1 ?? "",
+      l.s2 ?? "",
+      l.s3 ?? "",
+      l.compound,
+      l.tyreAge,
+      l.speedTrap ?? "",
+      l.isPersonalBest,
+      l.isOverallFastest,
+      l.isPitOut,
+    ]);
+    downloadCsv(`${primaryDriverInfo.code}_laps_session_${sessionKey}.csv`, headers, rows);
+  };
+
+  const handleDownloadStintsCsv = () => {
+    const headers = [
+      "Stint Number",
+      "Driver",
+      "Compound",
+      "Lap Start",
+      "Lap End",
+      "Total Laps",
+      "Tyre Age at Start",
+    ];
+    const rows = stints.map((s) => [
+      s.stint_number,
+      primaryDriverInfo.code,
+      s.compound,
+      s.lap_start,
+      s.lap_end,
+      s.lap_end - s.lap_start + 1,
+      s.tyre_age_at_start ?? 0,
+    ]);
+    downloadCsv(`${primaryDriverInfo.code}_stints_session_${sessionKey}.csv`, headers, rows);
+  };
+
+  const handleDownloadTelemetryCsv = () => {
+    const hasCompare = !!compareDriverInfo;
+    const headers = [
+      "Distance (m)",
+      "Time (s)",
+      `${primaryDriverInfo.code} Speed (km/h)`,
+      `${primaryDriverInfo.code} Throttle (%)`,
+      `${primaryDriverInfo.code} Brake (%)`,
+      `${primaryDriverInfo.code} Gear`,
+      `${primaryDriverInfo.code} RPM`,
+      `${primaryDriverInfo.code} DRS`,
+      ...(hasCompare
+        ? [
+            `${compareDriverInfo.code} Speed (km/h)`,
+            `${compareDriverInfo.code} Throttle (%)`,
+            `${compareDriverInfo.code} Brake (%)`,
+            `${compareDriverInfo.code} Gear`,
+            `${compareDriverInfo.code} RPM`,
+            `Delta (${primaryDriverInfo.code} vs ${compareDriverInfo.code}) (s)`,
+          ]
+        : []),
+    ];
+    const rows = telemetryData.map((p) => [
+      p.distance,
+      p.timeSec,
+      p.speed,
+      p.throttle,
+      p.brake,
+      p.gear,
+      p.rpm,
+      p.drs ? "ON" : "OFF",
+      ...(hasCompare
+        ? [
+            p.compareSpeed ?? "",
+            p.compareThrottle ?? "",
+            p.compareBrake ?? "",
+            p.compareGear ?? "",
+            p.compareRpm ?? "",
+            p.delta ?? "",
+          ]
+        : []),
+    ]);
+    const driverLabel = hasCompare ? `${primaryDriverInfo.code}_vs_${compareDriverInfo.code}` : primaryDriverInfo.code;
+    downloadCsv(`${driverLabel}_lap_${selectedLapNumber}_telemetry.csv`, headers, rows);
+  };
+
   return (
     <div className="driver-analytics-root">
       {/* 1. Profile Header with Driver Selectors & Quick Stats */}
@@ -488,6 +591,9 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         onCloseModal={onCloseModal}
         isFullscreenWindow={isFullscreenWindow}
         dataSource={telemetrySource}
+        onDownloadLapsCsv={handleDownloadLapsCsv}
+        onDownloadStintsCsv={handleDownloadStintsCsv}
+        onDownloadTelemetryCsv={handleDownloadTelemetryCsv}
       />
 
       {/* Advisory warning if circuit length metadata unavailable */}

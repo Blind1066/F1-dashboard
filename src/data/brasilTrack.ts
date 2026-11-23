@@ -7,8 +7,8 @@ export interface TrackTurn {
 
 export const BRASIL_CIRCUIT_CONFIG = {
   id: "interlagos",
-  name: "Autódromo José Carlos Pace",
-  locality: "São Paulo, Brazil",
+  name: "AutÃ³dromo JosÃ© Carlos Pace",
+  locality: "SÃ£o Paulo, Brazil",
   grandPrixName: "Brazilian Grand Prix",
   imageSrc: "/assets/circuits/brazil_circuit.png",
   viewBox: "0 0 1920 1080",

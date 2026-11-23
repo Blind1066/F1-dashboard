@@ -21,20 +21,21 @@ interface TyreDegradationTabProps {
   driverName: string;
 }
 
+// Color map for Pirelli compounds
+const COMPOUND_COLORS: Record<string, string> = {
+  SOFT: "#ff3b30",
+  MEDIUM: "#ffd60a",
+  HARD: "#ffffff",
+  INTERMEDIATE: "#30d158",
+  WET: "#007aff",
+};
+
 export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
   stints,
   laps,
   pitStops,
   driverName,
 }) => {
-  // Color map for Pirelli compounds
-  const compoundColors: Record<string, string> = {
-    SOFT: "#ff3b30",
-    MEDIUM: "#ffd60a",
-    HARD: "#ffffff",
-    INTERMEDIATE: "#30d158",
-    WET: "#007aff",
-  };
 
   // Real linear regression per stint (excluding pit-in/out and safety-car laps)
   const stintStats = useMemo(() => {
@@ -74,7 +75,7 @@ export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
         avgDisplay: avgDuration > 0 ? formatLapTime(avgDuration) : "-",
         regression,
         isInsufficient,
-        color: compoundColors[stint.compound.toUpperCase()] || "#ffcc00",
+        color: COMPOUND_COLORS[stint.compound.toUpperCase()] || "#ffcc00",
       };
     });
   }, [stints, laps, pitStops]);
@@ -114,7 +115,7 @@ export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
             {stints.map((stint) => {
               const stintLaps = stint.lap_end - stint.lap_start + 1;
               const widthPct = Math.max(12, (stintLaps / totalRaceLaps) * 100);
-              const color = compoundColors[stint.compound.toUpperCase()] || "#ffcc00";
+              const color = COMPOUND_COLORS[stint.compound.toUpperCase()] || "#ffcc00";
 
               return (
                 <div
@@ -198,7 +199,7 @@ export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
                   return (
                     <div className="f1-chart-tooltip">
                       <div className="tt-dist">Tyre Age: {d.tyreAge} laps</div>
-                      <div className="tt-item" style={{ color: compoundColors[d.compound] || "#fff" }}>
+                      <div className="tt-item" style={{ color: COMPOUND_COLORS[d.compound] || "#fff" }}>
                         <span>Compound:</span> <strong>{d.compound}</strong>
                       </div>
                       <div className="tt-item">
@@ -212,7 +213,7 @@ export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
                 {degradationChartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={compoundColors[entry.compound] || "#ffcc00"}
+                    fill={COMPOUND_COLORS[entry.compound] || "#ffcc00"}
                   />
                 ))}
               </Scatter>
