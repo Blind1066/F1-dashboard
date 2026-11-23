@@ -32,7 +32,6 @@
 * **Tyre Degradation Modeling**: Real-time compound tracking (Soft, Medium, Hard, Intermediate, Wet), tyre age, degradation curves, and pit stop durations.
 * **Race Pace & Position Progression**: Position changes from starting grid to chequered flag, gaps to leader and car ahead, safety car periods, and race control flags.
 * **Official Grand Prix Starting Grid & Classification**: Direct row-click driver selector with real starting grid positions, finishing positions, and net deltas.
-* **Interactive Circuit Blueprint**: Real vector circuit map with telemetry heatmaps, braking zones, and speed traps.
 
 ### 2. Multi-Season Race Calendar & Timings (`/schedule`)
 * **Dual Season Separation**: Seamless switching between the **2026 FIA Formula 1 Championship** and the **2027 Provisional Calendar**.
@@ -142,8 +141,7 @@ f1/
 │   │   │   ├── LapAnalysisTab.tsx         # Lap table, PB progression, sector splits
 │   │   │   ├── TyreDegradationTab.tsx     # Stint linear regression, wear curves
 │   │   │   ├── RacePaceTab.tsx            # Position progression & gap to leader
-│   │   │   ├── DriverComparisonTab.tsx    # Head-to-head overlay & delta analysis
-│   │   │   └── CircuitTelemetryMap.tsx    # GPS circuit trace & speed heatmap
+│   │   │   └── DriverComparisonTab.tsx    # Head-to-head overlay & delta analysis
 │   │   ├── Banner.tsx          # Warning & status banners
 │   │   ├── NextRaceCard.tsx    # Spotlight card with digital countdown clock
 │   │   ├── NextRacesTiles.tsx  # Upcoming Grand Prix cards

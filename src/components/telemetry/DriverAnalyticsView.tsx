@@ -17,7 +17,6 @@ import { LapAnalysisTab } from "./LapAnalysisTab";
 import { TyreDegradationTab } from "./TyreDegradationTab";
 import { RacePaceTab } from "./RacePaceTab";
 import { DriverComparisonTab } from "./DriverComparisonTab";
-import { CircuitTelemetryMap } from "./CircuitTelemetryMap";
 import { downloadCsv } from "../../utils/csvExport";
 import {
   alignTelemetryPair,
@@ -63,12 +62,11 @@ type AnalyticsTabType =
   | "laps"
   | "tyres"
   | "pace"
-  | "comparison"
-  | "circuit";
+  | "comparison";
 
 export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   initialDriverId,
-  initialDriverNumber = 1,
+  initialDriverNumber,
   raceDetails,
   onBackToClassification,
   onCloseModal,
@@ -82,20 +80,41 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
 
   // Derive initial driver number from row or ID (default 1: Max Verstappen P1)
   const defaultNum = useMemo(() => {
-    if (initialDriverNumber) return initialDriverNumber;
-    if (raceDetails && initialDriverId) {
-      const match = raceDetails.results.find((r) => r.driver.id === initialDriverId);
-      if (match?.driver.number) return Number(match.driver.number);
+    if (typeof initialDriverNumber === "number" && !isNaN(initialDriverNumber)) {
+      return initialDriverNumber;
+    }
+    if (raceDetails?.results && initialDriverId) {
+      const match = raceDetails.results.find(
+        (r) =>
+          r.driver.id?.toLowerCase() === initialDriverId.toLowerCase() ||
+          r.driver.code?.toLowerCase() === initialDriverId.toLowerCase() ||
+          r.driver.name?.toLowerCase() === initialDriverId.toLowerCase()
+      );
+      if (match?.driver?.number) {
+        const n = Number(match.driver.number);
+        if (!isNaN(n)) return n;
+      }
+    }
+    if (raceDetails?.results && raceDetails.results.length > 0) {
+      const winnerNum = Number(raceDetails.results[0].driver.number);
+      if (!isNaN(winnerNum)) return winnerNum;
     }
     return 1;
   }, [initialDriverNumber, raceDetails, initialDriverId]);
 
   const [primaryDriverNumber, setPrimaryDriverNumber] = useState<number>(defaultNum);
+
+  // Sync state whenever defaultNum changes (e.g. user selected another driver from results)
+  useEffect(() => {
+    setPrimaryDriverNumber(defaultNum);
+  }, [defaultNum]);
+
   const [compareDriverNumber, setCompareDriverNumber] = useState<number | null>(null);
   const [selectedLapNumber, setSelectedLapNumber] = useState<number>(24);
 
   // OpenF1 Real Data States
   const [openf1Drivers, setOpenf1Drivers] = useState<OpenF1Driver[]>([]);
+  const [allSessionPositions, setAllSessionPositions] = useState<OpenF1Position[]>([]);
   const [rawLapsA, setRawLapsA] = useState<OpenF1Lap[]>([]);
   const [openf1LapsA, setOpenf1LapsA] = useState<ProcessedLapSummary[]>([]);
   const [rawLapsB, setRawLapsB] = useState<OpenF1Lap[]>([]);
@@ -110,7 +129,18 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   const [openF1DataPointsCount, setOpenF1DataPointsCount] = useState<number>(0);
   const [telemetrySource, setTelemetrySource] = useState<"live" | "simulated">("simulated");
 
-  // Complete 20-driver grid with official São Paulo GP grid & finishing positions
+  // Reset driver-specific telemetry state when primary driver or session changes
+  useEffect(() => {
+    setRealTelemetry([]);
+    setRealStints([]);
+    setRealPitStops([]);
+    setRealPositions([]);
+    setRealIntervals([]);
+    setRawLapsA([]);
+    setOpenf1LapsA([]);
+  }, [primaryDriverNumber, sessionKey]);
+
+  // Complete 20-driver grid with official grid & finishing positions
   const driversList = useMemo(() => {
     let list: Array<{
       number: number;
@@ -128,9 +158,38 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
       totalLaps?: number;
     }> = [];
 
-    if (openf1Drivers.length > 0) {
+    if (raceDetails?.results && raceDetails.results.length > 0) {
+      list = raceDetails.results.map((r, idx) => {
+        const num = Number(r.driver.number) || idx + 1;
+        const prof = getDriverPerformanceProfile(num);
+        const grid = typeof r.grid === "number" ? r.grid : (prof.startGrid || idx + 1);
+        const pos = typeof r.position === "number" ? r.position : (prof.finishPosition || idx + 1);
+        const delta = typeof r.delta === "number" ? r.delta : (grid - pos);
+
+        return {
+          number: num,
+          code: r.driver.code || prof.code,
+          name: r.driver.name || prof.name,
+          team: r.team.name || prof.team,
+          colour: r.team.colour || prof.teamColor || getTeamColour(r.team.name),
+          headshot: r.driver.headshot || prof.headshot,
+          nationality: r.driver.nationality || prof.nationality,
+          position: pos,
+          grid: grid,
+          delta: delta,
+          fastestLap: r.fastestLap?.time || prof.fastestLapDisplay,
+          avgLap: prof.avgLapTimeDisplay,
+          totalLaps: r.laps || 58,
+        };
+      });
+    } else if (openf1Drivers.length > 0) {
       list = openf1Drivers.map((d, idx) => {
         const prof = getDriverPerformanceProfile(d.driver_number);
+        const driverPositions = allSessionPositions.filter((p) => Number(p.driver_number) === Number(d.driver_number));
+        const startGrid = driverPositions.length > 0 ? driverPositions[0].position : (prof.startGrid || idx + 1);
+        const finishPos = driverPositions.length > 0 ? driverPositions[driverPositions.length - 1].position : (prof.finishPosition || idx + 1);
+        const delta = startGrid - finishPos;
+
         return {
           number: d.driver_number,
           code: d.name_acronym,
@@ -139,30 +198,10 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
           colour: d.team_colour ? `#${d.team_colour}` : prof.teamColor || getTeamColour(d.team_name),
           headshot: d.headshot_url || prof.headshot,
           nationality: d.country_code || prof.nationality,
-          position: prof.finishPosition || idx + 1,
-          grid: prof.startGrid || idx + 1,
-          delta: prof.delta ?? 0,
+          position: finishPos,
+          grid: startGrid,
+          delta: delta,
           fastestLap: prof.fastestLapDisplay,
-          avgLap: prof.avgLapTimeDisplay,
-          totalLaps: 69,
-        };
-      });
-    } else if (raceDetails?.results && raceDetails.results.length > 0) {
-      list = raceDetails.results.map((r) => {
-        const num = Number(r.driver.number) || 1;
-        const prof = getDriverPerformanceProfile(num);
-        return {
-          number: num,
-          code: r.driver.code,
-          name: r.driver.name,
-          team: r.team.name,
-          colour: r.team.colour || prof.teamColor,
-          headshot: r.driver.headshot || prof.headshot,
-          nationality: r.driver.nationality || prof.nationality,
-          position: prof.finishPosition || r.position,
-          grid: prof.startGrid || r.grid,
-          delta: prof.delta ?? r.delta,
-          fastestLap: prof.fastestLapDisplay || r.fastestLap?.time,
           avgLap: prof.avgLapTimeDisplay,
           totalLaps: 69,
         };
@@ -188,21 +227,26 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
 
     // Sort strictly by official finishing position P1 through P20
     return list.sort((a, b) => Number(a.position || 99) - Number(b.position || 99));
-  }, [openf1Drivers, raceDetails]);
+  }, [openf1Drivers, raceDetails, allSessionPositions]);
 
   // Current comparison driver
   const compareDriverInfo = useMemo(() => {
     if (!compareDriverNumber) return null;
-    return driversList.find((d) => d.number === compareDriverNumber) || null;
+    return driversList.find((d) => Number(d.number) === Number(compareDriverNumber)) || null;
   }, [driversList, compareDriverNumber]);
 
-  // Effect 1: Fetch OpenF1 drivers and race control
+  // Effect 1: Fetch OpenF1 drivers, positions, and race control
   useEffect(() => {
     let isMounted = true;
-    if (sessionKey) {
+    if (sessionKey && !raceDetails) {
       getDrivers(sessionKey).then((drivers) => {
         if (isMounted && drivers && drivers.length > 0) {
           setOpenf1Drivers(drivers);
+        }
+      });
+      getPositions(sessionKey).then((positions) => {
+        if (isMounted && positions && positions.length > 0) {
+          setAllSessionPositions(positions);
         }
       });
       getRaceControl(sessionKey).then((rc) => {
@@ -214,12 +258,12 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [sessionKey]);
+  }, [sessionKey, raceDetails]);
 
   // Effect 2: Fetch Driver A real OpenF1 metrics (stints, pits, positions, intervals, laps)
   useEffect(() => {
     let isMounted = true;
-    if (!sessionKey || !primaryDriverNumber) return;
+    if (!sessionKey || !primaryDriverNumber || raceDetails) return;
 
     Promise.all([
       getStints(sessionKey, primaryDriverNumber),
@@ -259,12 +303,12 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [sessionKey, primaryDriverNumber]);
+  }, [sessionKey, primaryDriverNumber, raceDetails]);
 
   // Effect 3: Fetch Driver B real OpenF1 metrics (stints, laps)
   useEffect(() => {
     let isMounted = true;
-    if (!sessionKey || !compareDriverNumber) {
+    if (!sessionKey || !compareDriverNumber || raceDetails) {
       setOpenf1LapsB([]);
       setRawLapsB([]);
       return;
@@ -285,7 +329,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [sessionKey, compareDriverNumber]);
+  }, [sessionKey, compareDriverNumber, raceDetails]);
 
   const grandPrixTitle =
     raceDetails?.raceName ||
@@ -301,7 +345,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   // Effect 4: Fetch real OpenF1 car_data for selected lap
   useEffect(() => {
     let isMounted = true;
-    if (!sessionKey || !primaryDriverNumber || !selectedLapNumber) return;
+    if (!sessionKey || !primaryDriverNumber || !selectedLapNumber || raceDetails) return;
 
     const currentLapObj = rawLapsA.find((l) => l.lap_number === selectedLapNumber);
     const lapDurationA = currentLapObj?.lap_duration;
@@ -374,7 +418,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [sessionKey, primaryDriverNumber, compareDriverNumber, selectedLapNumber, rawLapsA, rawLapsB, circuitLengthM]);
+  }, [sessionKey, primaryDriverNumber, compareDriverNumber, selectedLapNumber, rawLapsA, rawLapsB, circuitLengthM, raceDetails]);
 
   // Laps datasets for Driver A and Driver B (Real OpenF1 prioritized or Distinct Realistic Driver Physics)
   const lapsA: ProcessedLapSummary[] = useMemo(() => {
@@ -404,14 +448,50 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
 
   // Current selected primary driver enriched with real OpenF1 metrics
   const primaryDriverInfo = useMemo(() => {
-    const found = driversList.find((d) => d.number === primaryDriverNumber) || driversList[0];
-    const bestRealLap = lapsA.find((l) => l.isOverallFastest) || lapsA.filter(l => l.lapDuration > 50).sort((a, b) => a.lapDuration - b.lapDuration)[0];
+    const found = driversList.find((d) => Number(d.number) === Number(primaryDriverNumber)) || driversList[0] || {
+      number: primaryDriverNumber,
+      code: "DRV",
+      name: `Driver #${primaryDriverNumber}`,
+      team: "Formula 1",
+      position: 1,
+      grid: 1,
+      delta: 0,
+      totalLaps: 58,
+    };
+
+    const validLaps = lapsA.filter((l) => !l.isPitOut && l.lapDuration > 40);
+    const bestRealLap = validLaps.length > 0
+      ? validLaps.reduce((best, curr) => (curr.lapDuration < best.lapDuration ? curr : best), validLaps[0])
+      : null;
+
+    let computedAvgLap = found.avgLap;
+    if (validLaps.length > 0) {
+      const avgSec = validLaps.reduce((acc, l) => acc + l.lapDuration, 0) / validLaps.length;
+      const m = Math.floor(avgSec / 60);
+      const s = (avgSec % 60).toFixed(3).padStart(6, "0");
+      computedAvgLap = `${m}:${s}`;
+    }
+
+    let finishPos = found.position;
+    let gridStart = found.grid;
+    let delta = found.delta;
+
+    if (realPositions && realPositions.length > 0) {
+      gridStart = realPositions[0].position;
+      finishPos = realPositions[realPositions.length - 1].position;
+      delta = (gridStart ?? 0) - (finishPos ?? 0);
+    }
+
     return {
       ...found,
+      position: finishPos,
+      grid: gridStart,
+      delta: delta,
       fastestLap: bestRealLap?.lapDurationDisplay || found.fastestLap,
+      avgLap: computedAvgLap,
       totalLaps: lapsA.length > 0 ? lapsA.length : found.totalLaps,
     };
-  }, [driversList, primaryDriverNumber, lapsA]);
+  }, [driversList, primaryDriverNumber, lapsA, realPositions]);
 
   // Telemetry data points for selected lap (Real OpenF1 car_data prioritized or Distinct Driver Physics)
   const telemetryData: TelemetryDataPoint[] = useMemo(() => {
@@ -685,16 +765,6 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         >
           <span>⚔️ Driver Comparison</span>
         </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === "circuit"}
-          className={`ttab-btn${activeTab === "circuit" ? " active" : ""}`}
-          onClick={() => setActiveTab("circuit")}
-        >
-          <span>🗺️ Circuit Map</span>
-        </button>
       </nav>
 
       {/* 3. Tab Contents */}
@@ -932,18 +1002,6 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
             lapsA={lapsA}
             lapsB={lapsB}
             selectedLapNumber={selectedLapNumber}
-          />
-        )}
-
-        {/* TAB 7: CIRCUIT MAP */}
-        {activeTab === "circuit" && (
-          <CircuitTelemetryMap
-            circuitId="interlagos"
-            telemetryData={telemetryData}
-            driverAName={primaryDriverInfo.name}
-            driverAColour={primaryDriverInfo.colour || getTeamColour(primaryDriverInfo.team)}
-            driverBName={compareDriverInfo?.name}
-            driverBColour={compareDriverInfo?.colour || "#64c4ff"}
           />
         )}
       </div>
