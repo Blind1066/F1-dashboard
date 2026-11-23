@@ -1,88 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { DriverAnalyticsView } from "../components/telemetry/DriverAnalyticsView";
-import { getSessions } from "../api/openf1";
-import type { OpenF1Session } from "../types/telemetry";
 
-interface SessionPreset {
-  key: number;
-  name: string;
-  circuit: string;
-  country: string;
-  year: number;
-}
-
-const PRESET_SESSIONS: SessionPreset[] = [
-  { key: 9636, name: "São Paulo Grand Prix", circuit: "Autódromo José Carlos Pace (Interlagos)", country: "Brazil", year: 2024 },
-  { key: 9662, name: "Abu Dhabi Grand Prix", circuit: "Yas Marina Circuit", country: "United Arab Emirates", year: 2024 },
-  { key: 9590, name: "Italian Grand Prix", circuit: "Autodromo Nazionale Monza", country: "Italy", year: 2024 },
-  { key: 9558, name: "British Grand Prix", circuit: "Silverstone Circuit", country: "United Kingdom", year: 2024 },
-  { key: 9574, name: "Belgian Grand Prix", circuit: "Circuit de Spa-Francorchamps", country: "Belgium", year: 2024 },
-  { key: 9523, name: "Monaco Grand Prix", circuit: "Circuit de Monaco", country: "Monaco", year: 2024 },
-];
+// Dedicated single Grand Prix: Brazilian Grand Prix (São Paulo GP at Autódromo José Carlos Pace, Interlagos)
+const BRAZIL_GP_SESSION = {
+  key: 9636,
+  name: "Brazilian Grand Prix",
+  officialName: "Formula 1 Grande Prêmio de São Paulo",
+  circuit: "Autódromo José Carlos Pace (Interlagos)",
+  country: "Brazil",
+  location: "São Paulo",
+  laps: 71,
+  circuitLengthKm: "4.309",
+};
 
 export const Telemetry: React.FC = () => {
-  const [selectedSessionKey, setSelectedSessionKey] = useState<number>(9636);
-  const [realSessions, setRealSessions] = useState<OpenF1Session[]>([]);
-
-  useEffect(() => {
-    getSessions(2024, "Race").then((sess) => {
-      if (sess && sess.length > 0) {
-        setRealSessions(sess);
-      }
-    });
-  }, []);
-
-  const currentRealSession = realSessions.find((s) => s.session_key === selectedSessionKey);
-  const currentPreset = PRESET_SESSIONS.find((s) => s.key === selectedSessionKey) || PRESET_SESSIONS[0];
-
-  const gpName = currentRealSession
-    ? `${currentRealSession.circuit_short_name || currentRealSession.country_name} Grand Prix`
-    : currentPreset.name;
-  const gpCircuit = currentRealSession
-    ? `${currentRealSession.circuit_short_name} (${currentRealSession.location})`
-    : currentPreset.circuit;
-  const gpCountry = currentRealSession ? currentRealSession.country_name : currentPreset.country;
-  const gpYear = currentRealSession ? currentRealSession.year : currentPreset.year;
-
   return (
     <div className="telemetry-fullscreen-page">
-      {/* Top Session Picker Banner */}
-      <section className="telemetry-session-bar" aria-label="Grand Prix Session Selection">
+      {/* Top Session Banner: Single Grand Prix Showcase */}
+      <section className="telemetry-session-bar" aria-label="Brazilian Grand Prix Telemetry">
         <div className="ts-left">
-          <div className="ts-badge">OPENF1 API LIVE</div>
+          <div className="ts-badge">🔴 LIVE PITWALL TELEMETRY</div>
           <div className="ts-info">
-            <span className="ts-gp-title">{gpName} {gpYear}</span>
-            <span className="ts-gp-circuit">📍 {gpCircuit} · {gpCountry} · Session #{selectedSessionKey}</span>
+            <span className="ts-gp-title">{BRAZIL_GP_SESSION.name} · São Paulo</span>
+            <span className="ts-gp-circuit">
+              📍 {BRAZIL_GP_SESSION.circuit} · {BRAZIL_GP_SESSION.country} · {BRAZIL_GP_SESSION.laps} Laps ({BRAZIL_GP_SESSION.circuitLengthKm} km) · Session #{BRAZIL_GP_SESSION.key}
+            </span>
           </div>
         </div>
 
         <div className="ts-right">
-          <label htmlFor="gp-session-select" className="ts-select-label">Select Grand Prix:</label>
-          <select
-            id="gp-session-select"
-            className="ts-dropdown"
-            value={selectedSessionKey}
-            onChange={(e) => setSelectedSessionKey(Number(e.target.value))}
-          >
-            {realSessions.length > 0
-              ? realSessions.map((s) => (
-                  <option key={s.session_key} value={s.session_key}>
-                    {s.year} {s.country_name} GP ({s.circuit_short_name})
-                  </option>
-                ))
-              : PRESET_SESSIONS.map((s) => (
-                  <option key={s.key} value={s.key}>
-                    {s.year} {s.name} ({s.country})
-                  </option>
-                ))}
-          </select>
+          <div className="ts-telemetry-badge-group">
+            <span className="ts-channel-tag">Speed (km/h)</span>
+            <span className="ts-channel-tag">Throttle (%)</span>
+            <span className="ts-channel-tag">Brake (%)</span>
+            <span className="ts-channel-tag">Gear (1-8)</span>
+            <span className="ts-channel-tag">RPM</span>
+            <span className="ts-channel-tag">DRS</span>
+          </div>
         </div>
       </section>
 
       {/* Main Full-Featured Driver Analytics View */}
       <DriverAnalyticsView
-        sessionKey={selectedSessionKey}
-        initialDriverNumber={1} // Verstappen by default (winner of 9636)
+        sessionKey={BRAZIL_GP_SESSION.key}
+        initialDriverNumber={1} // P1: Max Verstappen (The First) by default
         isFullscreenWindow={true}
       />
     </div>

@@ -4980,3 +4980,27 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   flex-wrap: wrap;
   gap: 8px;
 }
+
+.ts-telemetry-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ts-channel-tag {
+  font: 700 11px/1 var(--display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 5px 9px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.ts-channel-tag:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
