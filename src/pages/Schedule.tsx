@@ -11,7 +11,7 @@ import { ResultsModal } from "../components/ResultsModal";
 import { SkeletonRows } from "../components/Skeleton";
 
 type FilterType = "all" | "upcoming" | "completed";
-type SeasonView = 2026 | 2027 | "both";
+type SeasonView = 2026 | 2027;
 
 interface SeasonScheduleSectionProps {
   season: 2026 | 2027;
@@ -133,8 +133,7 @@ export const Schedule: React.FC = () => {
 
   // Parse initial season from search params
   const paramSeason = searchParams.get("season");
-  const initialSeason: SeasonView =
-    paramSeason === "2027" ? 2027 : paramSeason === "all" || paramSeason === "both" ? "both" : 2026;
+  const initialSeason: SeasonView = paramSeason === "2027" ? 2027 : 2026;
 
   const [seasonView, setSeasonView] = useState<SeasonView>(initialSeason);
   const [filter2026, setFilter2026] = useState<FilterType>("all");
@@ -145,8 +144,7 @@ export const Schedule: React.FC = () => {
   // Sync state to URL parameter
   const handleSeasonChange = (view: SeasonView) => {
     setSeasonView(view);
-    const val = view === "both" ? "all" : String(view);
-    setSearchParams({ season: val }, { replace: true });
+    setSearchParams({ season: String(view) }, { replace: true });
   };
 
   // 1. Fetch 2026 Schedule
@@ -201,11 +199,6 @@ export const Schedule: React.FC = () => {
       setOpenRounds(new Set([`2026-${nextRace2026.round}`]));
     } else if (seasonView === 2027 && nextRace2027 && openRounds.size === 0) {
       setOpenRounds(new Set([`2027-${nextRace2027.round}`]));
-    } else if (seasonView === "both" && openRounds.size === 0) {
-      const initialSet = new Set<string>();
-      if (nextRace2026) initialSet.add(`2026-${nextRace2026.round}`);
-      if (nextRace2027) initialSet.add(`2027-${nextRace2027.round}`);
-      setOpenRounds(initialSet);
     }
   }, [seasonView, nextRace2026, nextRace2027, openRounds.size]);
 
@@ -259,9 +252,7 @@ export const Schedule: React.FC = () => {
             <span>FIA Formula 1 World Championship Calendar</span>
           </div>
           <h1 className="hero-title">
-            {seasonView === 2026 && "F1 2026 Championship Schedule"}
-            {seasonView === 2027 && "F1 2027 Provisional Schedule"}
-            {seasonView === "both" && "F1 2026 & 2027 Seasons Schedule"}
+            {seasonView === 2026 ? "F1 2026 Championship Schedule" : "F1 2027 Provisional Schedule"}
           </h1>
           <p className="hero-sub">
             Track &amp; local time conversions, live countdown to lights out, weekend sessions, and full multi-season calendars.
@@ -269,7 +260,7 @@ export const Schedule: React.FC = () => {
         </div>
       </header>
 
-      {/* Season Switcher Navigation Bar (2026 / 2027 / Separated View) */}
+      {/* Season Switcher Navigation Bar (2026 / 2027) */}
       <section className="season-switcher-nav" role="tablist" aria-label="Formula 1 Seasons">
         <button
           type="button"
@@ -304,26 +295,9 @@ export const Schedule: React.FC = () => {
             <div className="season-nav-meta">Upcoming Season</div>
           </div>
         </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={seasonView === "both"}
-          className={`season-nav-btn${seasonView === "both" ? " active" : ""}`}
-          onClick={() => handleSeasonChange("both")}
-        >
-          <div className="season-nav-btn-content">
-            <div className="season-nav-top-line">
-              <span className="season-badge-pill split-badge">SEPARATED VIEW</span>
-              <span className="season-rounds-sub">Both Seasons</span>
-            </div>
-            <div className="season-nav-title">2026 &amp; 2027 Horizon</div>
-            <div className="season-nav-meta">Complete Multi-Year Schedule</div>
-          </div>
-        </button>
       </section>
 
-      {/* VIEW MODE 1: ONLY 2026 */}
+      {/* VIEW MODE 1: 2026 */}
       {seasonView === 2026 && (
         <div className="season-view-container">
           {/* Spotlight Card: Next Race 2026 */}
@@ -346,7 +320,7 @@ export const Schedule: React.FC = () => {
         </div>
       )}
 
-      {/* VIEW MODE 2: ONLY 2027 */}
+      {/* VIEW MODE 2: 2027 */}
       {seasonView === 2027 && (
         <div className="season-view-container">
           {/* Spotlight Card: 2027 Season Opener */}
@@ -370,88 +344,6 @@ export const Schedule: React.FC = () => {
             onOpenResults={(roundNum) => setSelectedResultsRound(roundNum)}
             nextRace={nextRace2027}
           />
-        </div>
-      )}
-
-      {/* VIEW MODE 3: BOTH SEASONS (SEPARATED VIEW) */}
-      {seasonView === "both" && (
-        <div className="season-view-container separated-view">
-          {/* 1. 2026 SEASON BLOCK */}
-          <section className="separated-season-block" aria-label="2026 Championship Season">
-            <div className="separated-block-header">
-              <div className="separated-badge-group">
-                <span className="season-chip-pill active">ACTIVE CHAMPIONSHIP</span>
-                <span className="separated-season-year">2026</span>
-              </div>
-              <h2 className="separated-block-title">2026 FIA Formula 1 World Championship</h2>
-              <p className="separated-block-desc">
-                Current championship in progress. Track telemetry, finished race classifications, and upcoming race countdowns.
-              </p>
-            </div>
-
-            <NextRaceCard race={nextRace2026} season={2026} />
-
-            <SeasonScheduleSection
-              season={2026}
-              title="2026 Grand Prix Schedule"
-              badgeLabel="2026 SEASON"
-              badgeType="active"
-              races={races2026}
-              filter={filter2026}
-              onFilterChange={setFilter2026}
-              openRounds={openRounds}
-              onToggleRound={toggleRound}
-              onOpenResults={(roundNum) => setSelectedResultsRound(roundNum)}
-              nextRace={nextRace2026}
-            />
-          </section>
-
-          {/* TRANSITION DIVIDER BETWEEN 2026 AND 2027 */}
-          <div className="seasons-transition-divider" aria-label="Season Divider">
-            <div className="divider-line" />
-            <div className="divider-badge-box">
-              <span className="divider-icon">🏁</span>
-              <span className="divider-text">2026 SEASON CONCLUDES DEC 2026</span>
-              <span className="divider-arrow">➔</span>
-              <span className="divider-icon">🚀</span>
-              <span className="divider-text">2027 SEASON COMMENCES MAR 2027</span>
-            </div>
-            <div className="divider-line" />
-          </div>
-
-          {/* 2. 2027 SEASON BLOCK */}
-          <section className="separated-season-block provisional" aria-label="2027 Provisional Season">
-            <div className="separated-block-header provisional">
-              <div className="separated-badge-group">
-                <span className="season-chip-pill provisional">PROVISIONAL CALENDAR</span>
-                <span className="separated-season-year prov">2027</span>
-              </div>
-              <h2 className="separated-block-title">2027 FIA Formula 1 World Championship</h2>
-              <p className="separated-block-desc">
-                Provisional 23-round calendar for the 2027 season with dual local/circuit time zone conversions and session countdowns.
-              </p>
-            </div>
-
-            <NextRaceCard
-              race={nextRace2027}
-              season={2027}
-              badgeLabel="2027 SEASON OPENER • ROUND 1"
-            />
-
-            <SeasonScheduleSection
-              season={2027}
-              title="2027 Provisional Grand Prix Schedule"
-              badgeLabel="2027 PROVISIONAL"
-              badgeType="provisional"
-              races={races2027}
-              filter={filter2027}
-              onFilterChange={setFilter2027}
-              openRounds={openRounds}
-              onToggleRound={toggleRound}
-              onOpenResults={(roundNum) => setSelectedResultsRound(roundNum)}
-              nextRace={nextRace2027}
-            />
-          </section>
         </div>
       )}
 
