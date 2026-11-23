@@ -219,14 +219,92 @@ export async function getWeather(sessionKey: number): Promise<OpenF1Weather[]> {
   }
 }
 
+export const CIRCUIT_LENGTHS_M: Record<string, number> = {
+  interlagos: 4309,
+  "são paulo": 4309,
+  sao_paulo: 4309,
+  sakhir: 5412,
+  bahrain: 5412,
+  jeddah: 6174,
+  melbourne: 5278,
+  albert_park: 5278,
+  suzuka: 5807,
+  shanghai: 5451,
+  miami: 5412,
+  imola: 4909,
+  monaco: 3337,
+  montreal: 4361,
+  catalunya: 4657,
+  barcelona: 4657,
+  spielberg: 4318,
+  red_bull_ring: 4318,
+  silverstone: 5891,
+  hungaroring: 4381,
+  spa: 7004,
+  spa_francorchamps: 7004,
+  zandvoort: 4259,
+  monza: 5793,
+  baku: 6003,
+  marina_bay: 4940,
+  singapore: 4940,
+  austin: 5513,
+  cota: 5513,
+  mexico: 4304,
+  las_vegas: 6201,
+  lusail: 5419,
+  qatar: 5419,
+  yas_marina: 5281,
+  abu_dhabi: 5281,
+};
+
+export interface CircuitMetadataResult {
+  circuitLengthM: number;
+  isAvailable: boolean;
+  warning?: string;
+}
+
+export function resolveCircuitLengthM(
+  circuitOrSession?: string | { circuit_short_name?: string; location?: string; country_name?: string }
+): CircuitMetadataResult {
+  if (!circuitOrSession) {
+    const warning = "Circuit length metadata is unavailable. Defaulting to estimated track length (4309m).";
+    console.warn(warning);
+    return { circuitLengthM: 4309, isAvailable: false, warning };
+  }
+
+  const searchKey =
+    typeof circuitOrSession === "string"
+      ? circuitOrSession.toLowerCase().replace(/[^a-z0-9]/g, "_")
+      : [
+          circuitOrSession.circuit_short_name,
+          circuitOrSession.location,
+          circuitOrSession.country_name,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+  for (const [key, len] of Object.entries(CIRCUIT_LENGTHS_M)) {
+    if (searchKey.includes(key)) {
+      return { circuitLengthM: len, isAvailable: true };
+    }
+  }
+
+  const label = typeof circuitOrSession === "string" ? circuitOrSession : circuitOrSession.circuit_short_name || "unknown circuit";
+  const warning = `Circuit length metadata unavailable for "${label}". Defaulting to estimated track length (4309m).`;
+  console.warn(warning);
+  return { circuitLengthM: 4309, isAvailable: false, warning };
+}
+
 // 10. Car Data for an individual Lap
 export async function getCarDataForLap(
   sessionKey: number,
   driverNumber: number,
   lapDateStart: string,
   lapDurationSec: number,
-  circuitLengthM = 4309
+  circuitLengthM?: number
 ): Promise<TelemetryResult> {
+  const effectiveLengthM = circuitLengthM ?? resolveCircuitLengthM().circuitLengthM;
   try {
     const startDate = new Date(lapDateStart);
     const endDate = new Date(startDate.getTime() + Math.ceil(lapDurationSec + 3) * 1000);
@@ -273,7 +351,7 @@ export async function getCarDataForLap(
 
       // Normalize distance to exact circuit length
       if (points.length > 0 && currentDist > 0) {
-        const scale = circuitLengthM / currentDist;
+        const scale = effectiveLengthM / currentDist;
         for (const p of points) {
           p.distance = Math.round(p.distance * scale);
         }
@@ -286,7 +364,7 @@ export async function getCarDataForLap(
     }
 
     return {
-      data: generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, circuitLengthM),
+      data: generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, effectiveLengthM),
       source: "simulated",
       error: "OpenF1 returned insufficient car data points for this lap",
     };
@@ -294,7 +372,7 @@ export async function getCarDataForLap(
     const errorMsg = err instanceof Error ? err.message : "OpenF1 car_data fetch fallback";
     console.warn("OpenF1 car_data fetch fallback:", err);
     return {
-      data: generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, circuitLengthM),
+      data: generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, effectiveLengthM),
       source: "simulated",
       error: errorMsg,
     };
@@ -305,9 +383,12 @@ export async function getCarDataForLap(
 export function alignTelemetryPair(
   driverAPoints: TelemetryDataPoint[],
   driverBPoints: TelemetryDataPoint[],
-  circuitLengthM = 4309,
+  circuitLengthM?: number,
   stepM = 25
 ): TelemetryDataPoint[] {
+  const maxA = driverAPoints.length ? driverAPoints[driverAPoints.length - 1].distance : 0;
+  const maxB = driverBPoints.length ? driverBPoints[driverBPoints.length - 1].distance : 0;
+  const effectiveLengthM = circuitLengthM || Math.max(maxA, maxB) || resolveCircuitLengthM().circuitLengthM;
   const aligned: TelemetryDataPoint[] = [];
 
   const interpolateAtDist = (pts: TelemetryDataPoint[], targetDist: number) => {
@@ -337,7 +418,7 @@ export function alignTelemetryPair(
     return pts[pts.length - 1];
   };
 
-  for (let d = 0; d <= circuitLengthM; d += stepM) {
+  for (let d = 0; d <= effectiveLengthM; d += stepM) {
     const ptA = interpolateAtDist(driverAPoints, d);
     const ptB = interpolateAtDist(driverBPoints, d);
 
@@ -411,7 +492,7 @@ export function processOpenF1Laps(
       const matchedStint = stints.find(
         (s) => lap.lap_number >= s.lap_start && lap.lap_number <= s.lap_end
       );
-      const compound = matchedStint?.compound || (lap.duration_sector_1 && lap.duration_sector_1 > 28 ? "INTERMEDIATE" : "MEDIUM");
+      const compound = matchedStint?.compound || "UNKNOWN";
       const tyreAge = matchedStint ? Math.max(1, lap.lap_number - matchedStint.lap_start + 1) : lap.lap_number;
 
       return {

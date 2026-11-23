@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import type { OpenF1Pit, OpenF1Stint, ProcessedLapSummary } from "../../types/telemetry";
 import { formatLapTime } from "../../api/telemetryDemo";
+import { computeLinearRegression, type RegressionResult } from "../../utils/regression";
 
 interface TyreDegradationTabProps {
   stints: OpenF1Stint[];
@@ -35,48 +36,48 @@ export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
     WET: "#007aff",
   };
 
-  // Group laps by compound for degradation comparison
-  const compoundStats = useMemo(() => {
-    const map: Record<
-      string,
-      { totalLaps: number; totalDuration: number; lapsList: ProcessedLapSummary[] }
-    > = {};
+  // Real linear regression per stint (excluding pit-in/out and safety-car laps)
+  const stintStats = useMemo(() => {
+    const pitInLaps = new Set(pitStops.map((p) => p.lap_number));
 
-    for (const lap of laps) {
-      if (lap.isPitOut || lap.lapDuration > 105) continue;
-      const c = lap.compound.toUpperCase();
-      if (!map[c]) {
-        map[c] = { totalLaps: 0, totalDuration: 0, lapsList: [] };
-      }
-      map[c].totalLaps++;
-      map[c].totalDuration += lap.lapDuration;
-      map[c].lapsList.push(lap);
-    }
+    return stints.map((stint) => {
+      // Exclude pit-in, pit-out, and safety-car/abnormally slow laps (>105s or <50s)
+      const validLaps = laps.filter((l) => {
+        if (l.lapNumber < stint.lap_start || l.lapNumber > stint.lap_end) return false;
+        if (l.isPitOut) return false;
+        if (pitInLaps.has(l.lapNumber)) return false;
+        if (l.lapDuration > 105 || l.lapDuration < 50) return false;
+        return true;
+      });
 
-    return Object.entries(map).map(([compound, val]) => {
-      const avg = Number((val.totalDuration / (val.totalLaps || 1)).toFixed(3));
-      // Estimate degradation rate using simple linear regression slope
-      let degSlope = 0.055;
-      if (val.lapsList.length > 5) {
-        const n = val.lapsList.length;
-        const sumX = val.lapsList.reduce((acc, l) => acc + l.tyreAge, 0);
-        const sumY = val.lapsList.reduce((acc, l) => acc + l.lapDuration, 0);
-        const sumXY = val.lapsList.reduce((acc, l) => acc + l.tyreAge * l.lapDuration, 0);
-        const sumXX = val.lapsList.reduce((acc, l) => acc + l.tyreAge * l.tyreAge, 0);
-        const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX || 1);
-        degSlope = Number(Math.max(0.02, Math.min(0.15, slope)).toFixed(3));
+      const n = validLaps.length;
+      let regression: RegressionResult | null = null;
+      const isInsufficient = n < 5;
+
+      if (!isInsufficient) {
+        regression = computeLinearRegression(
+          validLaps.map((l) => ({ x: l.tyreAge, y: l.lapDuration }))
+        );
       }
+
+      const avgDuration =
+        n > 0 ? validLaps.reduce((acc, l) => acc + l.lapDuration, 0) / n : 0;
 
       return {
-        compound,
-        totalLaps: val.totalLaps,
-        avgLapTime: avg,
-        avgDisplay: formatLapTime(avg),
-        degSlope,
-        color: compoundColors[compound] || "#999",
+        stintNumber: stint.stint_number,
+        compound: stint.compound.toUpperCase(),
+        lapStart: stint.lap_start,
+        lapEnd: stint.lap_end,
+        totalLaps: stint.lap_end - stint.lap_start + 1,
+        validLapCount: n,
+        avgDuration,
+        avgDisplay: avgDuration > 0 ? formatLapTime(avgDuration) : "-",
+        regression,
+        isInsufficient,
+        color: compoundColors[stint.compound.toUpperCase()] || "#ffcc00",
       };
     });
-  }, [laps]);
+  }, [stints, laps, pitStops]);
 
   // Scatter/Line chart: Lap Time vs Tyre Age
   const degradationChartData = useMemo(() => {
@@ -142,22 +143,28 @@ export const TyreDegradationTab: React.FC<TyreDegradationTabProps> = ({
         </div>
       </div>
 
-      {/* 2. COMPOUND STATS SUMMARY CARDS */}
+      {/* 2. STINT LINEAR REGRESSION DEGRADATION CARDS */}
       <div className="compound-cards-grid">
-        {compoundStats.map((cs) => (
-          <div key={cs.compound} className="compound-summary-card">
+        {stintStats.map((ss) => (
+          <div key={ss.stintNumber} className="compound-summary-card">
             <div className="csc-header">
               <span
                 className="compound-color-pill"
-                style={{ background: cs.color }}
+                style={{ background: ss.color }}
               />
-              <span className="csc-name">{cs.compound} COMPOUND</span>
+              <span className="csc-name">STINT {ss.stintNumber} · {ss.compound}</span>
             </div>
-            <div className="csc-val">{cs.avgDisplay}</div>
+            <div className="csc-val" style={{ fontSize: ss.isInsufficient ? "16px" : undefined, color: ss.isInsufficient ? "var(--muted)" : undefined }}>
+              {ss.isInsufficient
+                ? "insufficient data"
+                : `${ss.regression && ss.regression.slope >= 0 ? "+" : ""}${ss.regression?.slope}s / lap`}
+            </div>
             <div className="csc-sub">
-              <span>{cs.totalLaps} laps completed</span>
+              <span>{ss.validLapCount} valid laps (Laps {ss.lapStart}–{ss.lapEnd})</span>
               <span>•</span>
-              <span className="deg-factor">+{cs.degSlope}s / lap deg</span>
+              <span className="deg-factor">
+                {ss.isInsufficient ? "insufficient data (< 5 laps)" : `R² = ${ss.regression?.r2}`}
+              </span>
             </div>
           </div>
         ))}

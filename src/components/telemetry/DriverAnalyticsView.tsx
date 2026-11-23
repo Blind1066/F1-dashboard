@@ -29,6 +29,7 @@ import {
   getRaceControl,
   getStints,
   processOpenF1Laps,
+  resolveCircuitLengthM,
 } from "../../api/openf1";
 import {
   getAllDriverProfiles,
@@ -285,6 +286,17 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     };
   }, [sessionKey, compareDriverNumber]);
 
+  const grandPrixTitle =
+    raceDetails?.raceName ||
+    (countryName ? `${countryName} Grand Prix` : "Brazilian Grand Prix");
+  const sessionTitle =
+    sessionName || (circuitName ? `Official Race · ${circuitName}` : "Official Race Classification · Interlagos");
+
+  const circuitLengthMeta = useMemo(() => {
+    return resolveCircuitLengthM(circuitName || grandPrixTitle);
+  }, [circuitName, grandPrixTitle]);
+  const circuitLengthM = circuitLengthMeta.circuitLengthM;
+
   // Effect 4: Fetch real OpenF1 car_data for selected lap
   useEffect(() => {
     let isMounted = true;
@@ -305,7 +317,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
           primaryDriverNumber,
           currentLapObj.date_start,
           lapDurationA,
-          4309
+          circuitLengthM
         );
 
         if (!isMounted) return;
@@ -328,7 +340,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
             compareDriverNumber,
             lapBObj.date_start,
             lapDurationB,
-            4309
+            circuitLengthM
           );
 
           if (!isMounted) return;
@@ -336,7 +348,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
           setTelemetrySource(resA.source === "live" && resB.source === "live" ? "live" : resA.source);
 
           if (resA.data && resA.data.length > 0 && resB.data && resB.data.length > 0) {
-            const aligned = alignTelemetryPair(resA.data, resB.data, 4309, 25);
+            const aligned = alignTelemetryPair(resA.data, resB.data, circuitLengthM, 25);
             setRealTelemetry(aligned);
             setOpenF1DataPointsCount(aligned.length);
           } else if (resA.data && resA.data.length > 0) {
@@ -361,7 +373,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [sessionKey, primaryDriverNumber, compareDriverNumber, selectedLapNumber, rawLapsA, rawLapsB]);
+  }, [sessionKey, primaryDriverNumber, compareDriverNumber, selectedLapNumber, rawLapsA, rawLapsB, circuitLengthM]);
 
   // Laps datasets for Driver A and Driver B (Real OpenF1 prioritized or Distinct Realistic Driver Physics)
   const lapsA: ProcessedLapSummary[] = useMemo(() => {
@@ -410,7 +422,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
       primaryDriverNumber,
       selectedLapNumber,
       currentLapA?.lapDuration || profA.baseLapTime,
-      4309,
+      circuitLengthM,
       200,
       false
     );
@@ -425,13 +437,13 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
       compareDriverInfo.number,
       selectedLapNumber,
       currentLapB?.lapDuration || profB.baseLapTime,
-      4309,
+      circuitLengthM,
       200,
       true
     );
 
-    return alignTelemetryPair(rawA, rawB, 4309, 25);
-  }, [realTelemetry, lapsA, lapsB, selectedLapNumber, primaryDriverNumber, compareDriverInfo]);
+    return alignTelemetryPair(rawA, rawB, circuitLengthM, 25);
+  }, [realTelemetry, lapsA, lapsB, selectedLapNumber, primaryDriverNumber, compareDriverInfo, circuitLengthM]);
 
   // Stints for Driver A (Real OpenF1 stints prioritized or Distinct Driver Strategy)
   const stints = useMemo(() => {
@@ -461,11 +473,6 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
     return getDriverPositions(compareDriverInfo.number, lapsA.length || 71);
   }, [compareDriverInfo, lapsA.length]);
 
-  const grandPrixTitle =
-    raceDetails?.raceName ||
-    (countryName ? `${countryName} Grand Prix` : "Brazilian Grand Prix");
-  const sessionTitle = sessionName || (circuitName ? `Official Race · ${circuitName}` : "Official Race Classification · Interlagos");
-
   return (
     <div className="driver-analytics-root">
       {/* 1. Profile Header with Driver Selectors & Quick Stats */}
@@ -482,6 +489,13 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         isFullscreenWindow={isFullscreenWindow}
         dataSource={telemetrySource}
       />
+
+      {/* Advisory warning if circuit length metadata unavailable */}
+      {!circuitLengthMeta.isAvailable && (
+        <div className="telemetry-advisory-warning">
+          ⚠️ {circuitLengthMeta.warning}
+        </div>
+      )}
 
       {/* OpenF1 Official Real Data Status Bar */}
       <div className="openf1-live-status-bar">
