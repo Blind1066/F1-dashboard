@@ -24,7 +24,15 @@ export const NextRacesTiles: React.FC<NextRacesTilesProps> = ({
 }) => {
   const [expandedRound, setExpandedRound] = useState<number | null>(null);
 
-  if (!races || races.length === 0) {
+  // Filter out any race occurring in 2027, ensuring strictly upcoming 2026 races
+  const filteredRaces = React.useMemo(() => {
+    return (races || []).filter((r) => {
+      const raceYear = r.date ? new Date(r.date).getFullYear() : 0;
+      return raceYear === 2026 && !r.date.startsWith("2027") && !r.isCompleted;
+    });
+  }, [races]);
+
+  if (!filteredRaces || filteredRaces.length === 0) {
     return null;
   }
 
@@ -33,32 +41,27 @@ export const NextRacesTiles: React.FC<NextRacesTilesProps> = ({
   };
 
   return (
-    <section className="next-races-section" aria-label="Next 3 Championship Races">
+    <section className="next-races-section" aria-label="Upcoming Championship Races">
       {/* Section Title Bar */}
       <div className="section-title-bar">
         <div>
           <div className="section-eyebrow">
             <span className="racing-stripe" />
-            <span>Championship Horizon</span>
+            <span>2026 Championship</span>
           </div>
-          <h2 className="section-heading">NEXT 3 RACES</h2>
+          <h2 className="section-heading">
+            {filteredRaces.length === 1 ? "NEXT RACE" : `NEXT ${filteredRaces.length} RACES`}
+          </h2>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          <Link to="/schedule?season=2026" className="view-all-link">
-            <span>2026 Schedule</span>
-            <span>→</span>
-          </Link>
-          <span style={{ color: "var(--line)" }}>|</span>
-          <Link to="/schedule?season=2027" className="view-all-link" style={{ color: "#f59e0b" }}>
-            <span>2027 Schedule (Provisional)</span>
-            <span>→</span>
-          </Link>
-        </div>
+        <Link to="/schedule?season=2026" className="view-all-link">
+          <span>View 2026 Season Schedule</span>
+          <span>→</span>
+        </Link>
       </div>
 
-      {/* 3 Big Tiles Grid */}
+      {/* Big Tiles Grid */}
       <div className="big-tiles-grid">
-        {races.map((race, index) => {
+        {filteredRaces.map((race, index) => {
           const circuit = getCircuitData(
             race.circuit.id,
             race.circuit.name,

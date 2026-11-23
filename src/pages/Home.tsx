@@ -35,22 +35,21 @@ export const Home: React.FC = () => {
     return upcoming || races[races.length - 1];
   }, [races]);
 
-  // Determine next 3 races after the upcoming one
+  // Determine upcoming races strictly in 2026 after nextRace (strictly no 2027 races)
   const nextThreeRaces = useMemo(() => {
-    if (races.length === 0) return [];
-    if (!nextRace) return races.slice(0, 3);
+    if (races.length === 0 || !nextRace) return [];
 
     const nextIndex = races.findIndex((r) => r.round === nextRace.round);
     if (nextIndex === -1) return [];
 
-    // Slice 3 races immediately after nextRace
-    const after = races.slice(nextIndex + 1, nextIndex + 4);
-    if (after.length >= 3) return after;
-
-    // If season is near the end, fill up to 3 using upcoming or earlier rounds
-    const remainingNeeded = 3 - after.length;
-    const fill = races.filter((r) => r.round !== nextRace.round && !after.some((a) => a.round === r.round)).slice(0, remainingNeeded);
-    return [...after, ...fill];
+    // Strictly slice subsequent upcoming races in 2026 without wrapping to 2027
+    return races
+      .slice(nextIndex + 1)
+      .filter((r) => {
+        const raceYear = r.date ? new Date(r.date).getFullYear() : 0;
+        return !r.isCompleted && raceYear === 2026 && !r.date.startsWith("2027");
+      })
+      .slice(0, 3);
   }, [races, nextRace]);
 
   // Season statistics
