@@ -8,7 +8,6 @@
 [![TanStack Query](https://img.shields.io/badge/TanStack_Query-5.62-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](https://tanstack.com/query)
 [![Recharts](https://img.shields.io/badge/Recharts-3.10-22b5bf?style=for-the-badge&logo=d3.js&logoColor=white)](https://recharts.org/)
 [![OpenF1](https://img.shields.io/badge/OpenF1-API_v1-E10600?style=for-the-badge&logo=formula1&logoColor=white)](https://openf1.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 **A professional, dark-mode motorsport dashboard engineered for live and historical Formula 1 performance analytics, distance-synchronized telemetry comparison, tyre degradation modelling, and official FIA Grand Prix schedules.**
 
@@ -241,12 +240,6 @@ The project includes a production-ready `vercel.json` configured for single-page
 | **Engine RPM** | $RPM$ | $0 - 12500$ | Internal combustion engine crankshaft rotational speed. |
 | **DRS** | Boolean / State | $0, 10, 12, 14$ | Drag Reduction System activation state. |
 | **Lap Time** | $m:ss.fff$ | - | Lap duration formatted to thousandths of a second. |
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ---
 
