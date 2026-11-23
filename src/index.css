@@ -15,53 +15,9 @@
   --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-[data-theme="light"] {
-  --bg: #f4f5f7;
-  --surface: #ffffff;
-  --surface-2: #f0f1f4;
-  --line: #dfe2e8;
-  --text: #14161a;
-  --muted: #5d6573;
-  --up: #14935a;
-  --down: #d23b3b;
-  --warn-text: #8a5a0b;
-  --warn-border: #b7791f;
-}
-
-[data-theme="dark"] {
-  --bg: #0c0d10;
-  --surface: #15171c;
-  --surface-2: #1c1f26;
-  --line: #262a33;
-  --text: #f2f3f5;
-  --muted: #8b92a0;
-  --accent: #e10600;
-  --up: #3ecf8e;
-  --down: #ff5c5c;
-  --warn-text: #f0b44c;
-  --warn-border: #b7791f;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #f4f5f7;
-    --surface: #ffffff;
-    --surface-2: #f0f1f4;
-    --line: #dfe2e8;
-    --text: #14161a;
-    --muted: #5d6573;
-    --up: #14935a;
-    --down: #d23b3b;
-    --warn-text: #8a5a0b;
-    --warn-border: #b7791f;
-  }
-}
-
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { -webkit-text-size-adjust: 100%; color-scheme: dark light; }
-[data-theme="light"] { color-scheme: light; }
-[data-theme="dark"] { color-scheme: dark; }
+html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
 
 body {
   margin: 0; background: var(--bg); color: var(--text);

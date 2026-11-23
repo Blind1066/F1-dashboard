@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,18 +39,6 @@
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Early Theme Init (prevents theme flicker) -->
-    <script>
-      (function () {
-        try {
-          const stored = localStorage.getItem("pitwall-theme");
-          const prefDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          const theme = stored || (prefDark ? "dark" : "light");
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch (e) {}
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>
