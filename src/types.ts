@@ -323,4 +323,6 @@ export interface LiveRaceSessionState {
   airTemp: string;
   humidity: string;
   drivers: LiveDriverTiming[];
+  isDemo?: boolean;
+  dataSource?: string;
 }

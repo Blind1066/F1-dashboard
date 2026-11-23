@@ -100,6 +100,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   const [realRaceControl, setRealRaceControl] = useState<OpenF1RaceControl[]>([]);
   const [isLoadingTelemetry, setIsLoadingTelemetry] = useState<boolean>(false);
   const [openF1DataPointsCount, setOpenF1DataPointsCount] = useState<number>(0);
+  const [telemetrySource, setTelemetrySource] = useState<"live" | "simulated">("simulated");
 
   // Complete 20-driver grid with official São Paulo GP grid & finishing positions
   const driversList = useMemo(() => {
@@ -293,7 +294,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
 
     const fetchRealTelemetry = async () => {
       try {
-        const pointsA = await getCarDataForLap(
+        const resA = await getCarDataForLap(
           sessionKey,
           primaryDriverNumber,
           currentLapObj.date_start,
@@ -304,9 +305,10 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         if (!isMounted) return;
 
         if (!compareDriverNumber) {
-          if (pointsA && pointsA.length > 0) {
-            setRealTelemetry(pointsA);
-            setOpenF1DataPointsCount(pointsA.length);
+          setTelemetrySource(resA.source);
+          if (resA.data && resA.data.length > 0) {
+            setRealTelemetry(resA.data);
+            setOpenF1DataPointsCount(resA.data.length);
           }
           setIsLoadingTelemetry(false);
           return;
@@ -315,7 +317,7 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         const lapBObj = rawLapsB.find((l) => l.lap_number === selectedLapNumber);
         const lapDurationB = lapBObj?.lap_duration;
         if (lapBObj && lapBObj.date_start && typeof lapDurationB === "number" && lapDurationB > 0) {
-          const pointsB = await getCarDataForLap(
+          const resB = await getCarDataForLap(
             sessionKey,
             compareDriverNumber,
             lapBObj.date_start,
@@ -325,20 +327,24 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
 
           if (!isMounted) return;
 
-          if (pointsA && pointsA.length > 0 && pointsB && pointsB.length > 0) {
-            const aligned = alignTelemetryPair(pointsA, pointsB, 4309, 25);
+          setTelemetrySource(resA.source === "live" && resB.source === "live" ? "live" : resA.source);
+
+          if (resA.data && resA.data.length > 0 && resB.data && resB.data.length > 0) {
+            const aligned = alignTelemetryPair(resA.data, resB.data, 4309, 25);
             setRealTelemetry(aligned);
             setOpenF1DataPointsCount(aligned.length);
-          } else if (pointsA && pointsA.length > 0) {
-            setRealTelemetry(pointsA);
-            setOpenF1DataPointsCount(pointsA.length);
+          } else if (resA.data && resA.data.length > 0) {
+            setRealTelemetry(resA.data);
+            setOpenF1DataPointsCount(resA.data.length);
           }
-        } else if (pointsA && pointsA.length > 0) {
-          setRealTelemetry(pointsA);
-          setOpenF1DataPointsCount(pointsA.length);
+        } else if (resA.data && resA.data.length > 0) {
+          setTelemetrySource(resA.source);
+          setRealTelemetry(resA.data);
+          setOpenF1DataPointsCount(resA.data.length);
         }
       } catch (err) {
         console.warn("OpenF1 car_data fetch notice:", err);
+        setTelemetrySource("simulated");
       } finally {
         if (isMounted) setIsLoadingTelemetry(false);
       }
@@ -466,21 +472,25 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
         onBackToClassification={onBackToClassification}
         onCloseModal={onCloseModal}
         isFullscreenWindow={isFullscreenWindow}
+        dataSource={telemetrySource}
       />
 
       {/* OpenF1 Official Real Data Status Bar */}
       <div className="openf1-live-status-bar">
         <div className="openf1-status-left">
-          <span className="live-radar-dot green" />
+          <span className={`live-radar-dot ${telemetrySource === "live" ? "green" : "amber"}`} />
           <span className="openf1-status-text">
-            <strong>OpenF1 Official API Live</strong>
+            <strong>{telemetrySource === "live" ? "Live OpenF1 data" : "Simulated data - OpenF1 unavailable"}</strong>
             {" · "}
             {openf1LapsA.length > 0 ? `${openf1LapsA.length} Official Laps Loaded` : "Syncing Laps..."}
             {" · "}
-            Lap #{selectedLapNumber} Telemetry ({openF1DataPointsCount > 0 ? `${openF1DataPointsCount} Real Car Data Points` : "Fetching Car ECU Traces..."})
+            Lap #{selectedLapNumber} Telemetry ({openF1DataPointsCount > 0 ? `${openF1DataPointsCount} Data Points` : "Fetching Car ECU Traces..."})
           </span>
         </div>
         <div className="openf1-status-right">
+          <span className={`badge-data-source ${telemetrySource === "live" ? "live" : "simulated"}`}>
+            {telemetrySource === "live" ? "🟢 Live OpenF1 data" : "🟡 Simulated data - OpenF1 unavailable"}
+          </span>
           {isLoadingTelemetry && <span className="openf1-sync-spinner">🔄 Streaming OpenF1 car_data...</span>}
           <span className="openf1-api-badge">OpenF1 v1 · Session #{sessionKey}</span>
         </div>

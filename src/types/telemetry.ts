@@ -170,6 +170,12 @@ export interface TelemetryDataPoint {
   delta?: number; // time delta in seconds (Driver A vs Driver B)
 }
 
+export interface TelemetryResult {
+  data: TelemetryDataPoint[];
+  source: "live" | "simulated";
+  error?: string;
+}
+
 export interface ProcessedLapSummary {
   lapNumber: number;
   lapDuration: number;

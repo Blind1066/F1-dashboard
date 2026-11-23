@@ -83,7 +83,7 @@ export function createInitialLiveSession(race?: ScheduleRace | null): LiveRaceSe
 
   return {
     round,
-    raceName,
+    raceName: `${raceName} (Demo Timing)`,
     circuitName,
     currentLap,
     totalLaps,
@@ -94,6 +94,8 @@ export function createInitialLiveSession(race?: ScheduleRace | null): LiveRaceSe
     trackTemp: "41.8°C",
     airTemp: "27.5°C",
     humidity: "58%",
+    isDemo: true,
+    dataSource: "Demo / Simulated Live Timing",
     drivers,
   };
 }

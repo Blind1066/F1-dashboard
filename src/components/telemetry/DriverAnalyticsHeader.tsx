@@ -35,6 +35,7 @@ interface DriverAnalyticsHeaderProps {
   }>;
   grandPrixName: string;
   sessionName: string;
+  dataSource?: "live" | "simulated";
   onSelectPrimaryDriver: (driverNumber: number) => void;
   onSelectCompareDriver: (driverNumber: number | null) => void;
   onBackToClassification?: () => void;
@@ -48,6 +49,7 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
   driversList,
   grandPrixName,
   sessionName,
+  dataSource = "simulated",
   onSelectPrimaryDriver,
   onSelectCompareDriver,
   onBackToClassification,
@@ -97,6 +99,9 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
             <span className="sep">•</span>
             <span className="session-type">{sessionName}</span>
             <span className="badge-official">PITWALL TELEMETRY</span>
+            <span className={`badge-data-source ${dataSource === "live" ? "live" : "simulated"}`}>
+              {dataSource === "live" ? "🟢 Live OpenF1 data" : "🟡 Simulated data - OpenF1 unavailable"}
+            </span>
           </div>
         </div>
 

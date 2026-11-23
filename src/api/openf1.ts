@@ -11,6 +11,7 @@ import type {
   OpenF1Weather,
   ProcessedLapSummary,
   TelemetryDataPoint,
+  TelemetryResult,
 } from "../types/telemetry";
 import {
   formatLapTime,
@@ -112,7 +113,7 @@ export async function getCarDataForLap(
   lapDateStart: string,
   lapDurationSec: number,
   circuitLengthM = 4309
-): Promise<TelemetryDataPoint[]> {
+): Promise<TelemetryResult> {
   try {
     const startDate = new Date(lapDateStart);
     const endDate = new Date(startDate.getTime() + Math.ceil(lapDurationSec + 3) * 1000);
@@ -165,14 +166,26 @@ export async function getCarDataForLap(
         }
       }
 
-      return points;
+      return {
+        data: points,
+        source: "live",
+      };
     }
-  } catch (err) {
-    console.warn("OpenF1 car_data fetch fallback:", err);
-  }
 
-  // Graceful fallback with realistic telemetry
-  return generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, circuitLengthM);
+    return {
+      data: generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, circuitLengthM),
+      source: "simulated",
+      error: "OpenF1 returned insufficient car data points for this lap",
+    };
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : "OpenF1 car_data fetch fallback";
+    console.warn("OpenF1 car_data fetch fallback:", err);
+    return {
+      data: generateRealisticLapTelemetry(driverNumber, 10, lapDurationSec, circuitLengthM),
+      source: "simulated",
+      error: errorMsg,
+    };
+  }
 }
 
 // 11. Synchronize Driver A and Driver B distance-based telemetry pair

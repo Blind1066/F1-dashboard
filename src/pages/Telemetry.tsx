@@ -19,7 +19,7 @@ export const Telemetry: React.FC = () => {
       {/* Top Session Banner: Single Grand Prix Showcase */}
       <section className="telemetry-session-bar" aria-label="Brazilian Grand Prix Telemetry">
         <div className="ts-left">
-          <div className="ts-badge">🔴 LIVE PITWALL TELEMETRY</div>
+          <div className="ts-badge">⏱️ Historical session data</div>
           <div className="ts-info">
             <span className="ts-gp-title">{BRAZIL_GP_SESSION.name} · São Paulo</span>
             <span className="ts-gp-circuit">
