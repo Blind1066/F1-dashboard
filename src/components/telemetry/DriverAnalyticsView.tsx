@@ -101,10 +101,26 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
   const [isLoadingTelemetry, setIsLoadingTelemetry] = useState<boolean>(false);
   const [openF1DataPointsCount, setOpenF1DataPointsCount] = useState<number>(0);
 
-  // Complete 20-driver grid with distinct profiles and performance metrics
+  // Complete 20-driver grid with official São Paulo GP grid & finishing positions
   const driversList = useMemo(() => {
+    let list: Array<{
+      number: number;
+      code: string;
+      name: string;
+      team: string;
+      colour?: string;
+      headshot?: string;
+      nationality?: string;
+      position?: number | string;
+      grid?: number;
+      delta?: number;
+      fastestLap?: string;
+      avgLap?: string;
+      totalLaps?: number;
+    }> = [];
+
     if (openf1Drivers.length > 0) {
-      return openf1Drivers.map((d, idx) => {
+      list = openf1Drivers.map((d, idx) => {
         const prof = getDriverPerformanceProfile(d.driver_number);
         return {
           number: d.driver_number,
@@ -116,16 +132,14 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
           nationality: d.country_code || prof.nationality,
           position: prof.finishPosition || idx + 1,
           grid: prof.startGrid || idx + 1,
-          delta: prof.delta || 0,
+          delta: prof.delta ?? 0,
           fastestLap: prof.fastestLapDisplay,
           avgLap: prof.avgLapTimeDisplay,
-          totalLaps: 71,
+          totalLaps: 69,
         };
       });
-    }
-
-    if (raceDetails?.results && raceDetails.results.length > 0) {
-      return raceDetails.results.map((r) => {
+    } else if (raceDetails?.results && raceDetails.results.length > 0) {
+      list = raceDetails.results.map((r) => {
         const num = Number(r.driver.number) || 1;
         const prof = getDriverPerformanceProfile(num);
         return {
@@ -136,32 +150,35 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
           colour: r.team.colour || prof.teamColor,
           headshot: r.driver.headshot || prof.headshot,
           nationality: r.driver.nationality || prof.nationality,
-          position: r.position,
-          grid: r.grid,
-          delta: r.delta,
-          fastestLap: r.fastestLap?.time || prof.fastestLapDisplay,
+          position: prof.finishPosition || r.position,
+          grid: prof.startGrid || r.grid,
+          delta: prof.delta ?? r.delta,
+          fastestLap: prof.fastestLapDisplay || r.fastestLap?.time,
           avgLap: prof.avgLapTimeDisplay,
-          totalLaps: r.laps,
+          totalLaps: 69,
         };
       });
+    } else {
+      // Official 20-driver grid from DRIVER_PERFORMANCE_PROFILES
+      list = getAllDriverProfiles().map((p) => ({
+        number: p.number,
+        code: p.code,
+        name: p.name,
+        team: p.team,
+        colour: p.teamColor,
+        headshot: p.headshot,
+        nationality: p.nationality,
+        position: p.finishPosition,
+        grid: p.startGrid,
+        delta: p.delta,
+        fastestLap: p.fastestLapDisplay,
+        avgLap: p.avgLapTimeDisplay,
+        totalLaps: 69,
+      }));
     }
 
-    // Official 20-driver grid from DRIVER_PERFORMANCE_PROFILES
-    return getAllDriverProfiles().map((p) => ({
-      number: p.number,
-      code: p.code,
-      name: p.name,
-      team: p.team,
-      colour: p.teamColor,
-      headshot: p.headshot,
-      nationality: p.nationality,
-      position: p.finishPosition,
-      grid: p.startGrid,
-      delta: p.delta,
-      fastestLap: p.fastestLapDisplay,
-      avgLap: p.avgLapTimeDisplay,
-      totalLaps: 71,
-    }));
+    // Sort strictly by official finishing position P1 through P20
+    return list.sort((a, b) => Number(a.position || 99) - Number(b.position || 99));
   }, [openf1Drivers, raceDetails]);
 
   // Current comparison driver
@@ -578,6 +595,130 @@ export const DriverAnalyticsView: React.FC<DriverAnalyticsViewProps> = ({
                   pitStops={pitStops}
                   driverName={primaryDriverInfo.name}
                 />
+              </div>
+            </div>
+
+            {/* Official São Paulo Grand Prix Starting Grid & Race Classification Table */}
+            <div className="card telemetry-classification-card" style={{ marginTop: "20px" }}>
+              <div className="classification-card-header">
+                <div>
+                  <div className="overview-eyebrow">
+                    <span className="live-radar-dot" />
+                    <span>Official Session Classification · Interlagos</span>
+                  </div>
+                  <h3 className="classification-title">
+                    São Paulo Grand Prix — Starting Grid &amp; Race Results
+                  </h3>
+                  <p className="classification-sub">
+                    Click any driver row to inspect their synchronized telemetry, braking points, throttle traces, and tyre strategy.
+                  </p>
+                </div>
+                <div className="classification-header-tag">
+                  <span>69 LAPS</span>
+                  <span className="sep">•</span>
+                  <span>AUTÓDROMO JOSÉ CARLOS PACE</span>
+                </div>
+              </div>
+
+              <div className="table-container">
+                <table className="telemetry-grid-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: "60px" }}>Pos</th>
+                      <th style={{ width: "50px" }}>No</th>
+                      <th>Driver</th>
+                      <th>Team</th>
+                      <th style={{ textAlign: "center" }}>Start Grid</th>
+                      <th style={{ textAlign: "center" }}>Positions +/-</th>
+                      <th style={{ textAlign: "right" }}>Fastest Lap</th>
+                      <th style={{ textAlign: "right" }}>Status / Laps</th>
+                      <th style={{ width: "110px", textAlign: "center" }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {driversList.map((d) => {
+                      const isSelected = d.number === primaryDriverNumber;
+                      const isComparing = d.number === compareDriverNumber;
+                      const deltaVal = Number(d.delta ?? 0);
+                      const isWinner = d.position === 1;
+
+                      return (
+                        <tr
+                          key={d.number}
+                          className={`grid-table-row${isSelected ? " selected-primary" : ""}${isComparing ? " selected-compare" : ""}`}
+                          onClick={() => setPrimaryDriverNumber(d.number)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>
+                            <span className={`grid-pos-pill${isWinner ? " winner" : ""}`}>
+                              {d.position ? `P${d.position}` : "-"}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="driver-num-tag" style={{ color: d.colour }}>
+                              #{d.number}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="grid-driver-cell">
+                              <span
+                                className="team-bar-indicator"
+                                style={{ background: d.colour || "#e10600" }}
+                              />
+                              <span className="grid-driver-name">{d.name}</span>
+                              <span className="grid-driver-code">{d.code}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="grid-team-name">{d.team}</span>
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <span className="grid-start-pill">
+                              P{d.grid ?? "-"}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {deltaVal > 0 ? (
+                              <span className="delta-gain-pill">▲ +{deltaVal}</span>
+                            ) : deltaVal < 0 ? (
+                              <span className="delta-loss-pill">▼ {deltaVal}</span>
+                            ) : (
+                              <span className="delta-held-pill">= held</span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: "right", fontFamily: "monospace" }}>
+                            {d.number === 1 ? (
+                              <span style={{ color: "#d946ef", fontWeight: 700 }}>
+                                🟣 {d.fastestLap || "1:20.472"}
+                              </span>
+                            ) : (
+                              <span>{d.fastestLap || "-"}</span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: "right", color: "var(--muted)" }}>
+                            {d.position && Number(d.position) > 17
+                              ? (d.position === 18 || d.position === 19 ? "DNS" : "DSQ")
+                              : d.position === 16 || d.position === 17
+                              ? "DNF"
+                              : "69 Laps"}
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <button
+                              type="button"
+                              className={`telemetry-view-btn${isSelected ? " active" : ""}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPrimaryDriverNumber(d.number);
+                              }}
+                            >
+                              {isSelected ? "Selected" : "Analyze"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

@@ -30,6 +30,8 @@ interface DriverAnalyticsHeaderProps {
     code: string;
     name: string;
     team: string;
+    position?: number | string;
+    grid?: number;
   }>;
   grandPrixName: string;
   sessionName: string;
@@ -209,7 +211,7 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
             >
               {driversList.map((d) => (
                 <option key={d.number} value={d.number}>
-                  #{d.number} {d.name} ({d.team})
+                  {d.position ? `P${d.position} · ` : ""}#{d.number} {d.name} (Grid: P{d.grid ?? "-"} · {d.team})
                 </option>
               ))}
             </select>
@@ -234,7 +236,7 @@ export const DriverAnalyticsHeader: React.FC<DriverAnalyticsHeaderProps> = ({
                 .filter((d) => d.number !== primaryDriver.number)
                 .map((d) => (
                   <option key={d.number} value={d.number}>
-                    #{d.number} {d.name} ({d.team})
+                    {d.position ? `P${d.position} · ` : ""}#{d.number} {d.name} (Grid: P{d.grid ?? "-"} · {d.team})
                   </option>
                 ))}
             </select>
