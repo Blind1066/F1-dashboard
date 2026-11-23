@@ -107,7 +107,7 @@ All APIs used in this project are **100% free and open-access**. **No paid API k
 ```
 
 * **Vite 6**: Ultra-fast build tool and modern dev server with instant Hot Module Replacement (HMR).
-* **React 18 & TypeScript 5**: Component-driven UI built under strict TypeScript compilation mode with 100% type safety.
+* **React 18 & TypeScript 5**: Component-driven UI built under strict TypeScript compilation mode with comprehensive type definitions.
 * **TanStack Query (React Query) v5**: Handles intelligent asynchronous state management, in-memory caching with 30-minute stale time, and offline fallback transitions.
 * **Recharts 3**: Composable SVG charting library driving the synchronized multi-channel telemetry displays.
 * **React Router v6**: Client-side routing with URL query-string state synchronization (`?season=2026`, `?season=2027`).
@@ -118,7 +118,7 @@ All APIs used in this project are **100% free and open-access**. **No paid API k
 ## 📂 Project Structure
 
 ```
-c:\Users\MAMAT\Desktop\f1\
+f1/
 ├── public/
 │   ├── assets/
 │   │   ├── headshots/          # Local driver portraits (Lindblad, Ocon, Tsunoda, etc.)
@@ -126,18 +126,21 @@ c:\Users\MAMAT\Desktop\f1\
 │   │   └── tracks/             # 2026/2027 track photo cards
 │   └── favicon.svg             # Pitwall brand favicon
 ├── src/
+│   ├── __tests__/              # Vitest unit test suites
+│   │   └── telemetry.test.ts   # Tests for lap processing, alignment & regression
 │   ├── api/
-│   │   ├── openf1.ts           # OpenF1 REST API client with in-memory caching
+│   │   ├── openf1.ts           # OpenF1 REST API client with retry & exponential backoff
 │   │   ├── jolpica.ts          # Jolpica F1 Ergast client & time zone formatter
 │   │   ├── demo.ts             # 2026 & 2027 official/provisional calendar datasets
+│   │   ├── liveTiming.ts       # Simulated demo timing session generator
 │   │   └── telemetryDemo.ts    # High-precision Interlagos physics simulation engine
 │   ├── components/
 │   │   ├── telemetry/          # Telemetry & Performance Analytics Suite
 │   │   │   ├── DriverAnalyticsView.tsx    # Telemetry view container & tab router
-│   │   │   ├── DriverAnalyticsHeader.tsx  # Driver profile card, stats & selectors
+│   │   │   ├── DriverAnalyticsHeader.tsx  # Driver profile card, stats, CSV exports
 │   │   │   ├── TelemetryCharts.tsx        # Speed, Throttle, Brake, Gear, RPM traces
 │   │   │   ├── LapAnalysisTab.tsx         # Lap table, PB progression, sector splits
-│   │   │   ├── TyreDegradationTab.tsx     # Stints timeline, compound wear curves
+│   │   │   ├── TyreDegradationTab.tsx     # Stint linear regression, wear curves
 │   │   │   ├── RacePaceTab.tsx            # Position progression & gap to leader
 │   │   │   ├── DriverComparisonTab.tsx    # Head-to-head overlay & delta analysis
 │   │   │   └── CircuitTelemetryMap.tsx    # GPS circuit trace & speed heatmap
@@ -150,20 +153,24 @@ c:\Users\MAMAT\Desktop\f1\
 │   │   ├── TopBar.tsx          # Navigation header
 │   │   └── TrackBlueprint.tsx  # Dynamic SVG circuit vector renderer
 │   ├── data/
-│   │   └── circuits.ts         # Vector SVG paths, turn coordinates, DRS zones
+│   │   ├── circuits.ts         # Vector SVG paths, turn coordinates, DRS zones
+│   │   └── brasilTrack.ts      # Vector coordinates for Interlagos circuit
 │   ├── pages/
 │   │   ├── Home.tsx            # Spotlight countdown & upcoming 2026 rounds
 │   │   ├── Schedule.tsx        # 2026 vs 2027 separated race schedules
 │   │   ├── Standings.tsx       # Championship standings with round selector
+│   │   ├── News.tsx            # Motorsport news feeds
 │   │   └── Telemetry.tsx       # Dedicated full-screen Driver Telemetry page
 │   ├── types/
-│   │   ├── index.ts            # Schedule, race, and standings TypeScript types
 │   │   └── telemetry.ts        # OpenF1 and telemetry channel TypeScript types
 │   ├── utils/
+│   │   ├── csvExport.ts        # Browser CSV export utility for laps & telemetry
+│   │   ├── regression.ts       # Linear regression and R-squared calculation
 │   │   └── trackPhotos.ts      # Circuit photo resolver & weekend date formatters
-│   ├── App.tsx                 # App routing & React Query client provider
+│   ├── types.ts                # Schedule, race, and standings TypeScript types
+│   ├── App.tsx                 # App routing with React.lazy code splitting
 │   ├── index.css               # Global dark motorsport dashboard styling
-│   └── main.tsx                # Application entrypoint
+│   └── main.tsx                # Application entrypoint & TanStack Query configuration
 ├── vercel.json                 # Vercel SPA routing rewrite rules & CDN headers
 ├── package.json
 ├── tsconfig.json
@@ -240,6 +247,14 @@ The project includes a production-ready `vercel.json` configured for single-page
 | **Engine RPM** | $RPM$ | $0 - 12500$ | Internal combustion engine crankshaft rotational speed. |
 | **DRS** | Boolean / State | $0, 10, 12, 14$ | Drag Reduction System activation state. |
 | **Lap Time** | $m:ss.fff$ | - | Lap duration formatted to thousandths of a second. |
+
+---
+
+## ⚖️ Third-Party Assets & Notice
+
+* **Formula 1 Trademarks & Logos**: Formula 1, F1, FIA, and related marks are trademarks of Formula One Licensing B.V. All team crests, logos, and emblems are property of their respective constructor teams.
+* **Photography & Headshots**: Driver portraits and circuit photography are sourced from official media CDNs and open-access community archives for editorial and non-commercial educational analysis.
+* **Disclaimer**: This is an independent, non-commercial open-source fan project and is not affiliated with, endorsed by, or sponsored by Formula 1, Formula One Licensing B.V., the FIA, or any Formula 1 team.
 
 ---
 

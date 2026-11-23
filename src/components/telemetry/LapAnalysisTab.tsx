@@ -25,6 +25,16 @@ interface LapAnalysisTabProps {
   onSelectLap: (lap: number) => void;
 }
 
+interface LapDotProps {
+  cx?: number;
+  cy?: number;
+  payload?: {
+    isFastest?: boolean;
+    isPB?: boolean;
+    [key: string]: unknown;
+  };
+}
+
 export const LapAnalysisTab: React.FC<LapAnalysisTabProps> = ({
   lapsA,
   lapsB = [],
@@ -198,8 +208,9 @@ export const LapAnalysisTab: React.FC<LapAnalysisTabProps> = ({
                 name={driverAName}
                 stroke={driverAColour}
                 strokeWidth={2.5}
-                dot={(props: any) => {
+                dot={(props: LapDotProps) => {
                   const { cx, cy, payload } = props;
+                  if (!payload) return null;
                   if (payload.isFastest) {
                     return <circle cx={cx} cy={cy} r={5} fill="#a855f7" stroke="#ffffff" strokeWidth={2} />;
                   }
