@@ -118,6 +118,60 @@ export const DEMO_RACES: Race[] = [
   { round: 1, name: "Australian Grand Prix", country: "Australia", date: "2026-03-08", time: "04:00:00Z" },
 ];
 
+export const DEMO_RACES_2027: Race[] = [
+  { round: 1, name: "Australian Grand Prix", country: "Australia", date: "2027-03-14", time: "04:00:00Z" },
+  { round: 2, name: "Chinese Grand Prix", country: "China", date: "2027-03-28", time: "07:00:00Z" },
+  { round: 3, name: "Japanese Grand Prix", country: "Japan", date: "2027-04-11", time: "05:00:00Z" },
+  { round: 4, name: "Bahrain Grand Prix", country: "Bahrain", date: "2027-04-18", time: "15:00:00Z" },
+  { round: 5, name: "Saudi Arabian Grand Prix", country: "Saudi Arabia", date: "2027-04-25", time: "17:00:00Z" },
+  { round: 6, name: "Miami Grand Prix", country: "USA", date: "2027-05-09", time: "20:00:00Z" },
+  { round: 7, name: "Canadian Grand Prix", country: "Canada", date: "2027-05-23", time: "18:00:00Z" },
+  { round: 8, name: "Monaco Grand Prix", country: "Monaco", date: "2027-06-06", time: "13:00:00Z" },
+  { round: 9, name: "Spanish Grand Prix", country: "Spain", date: "2027-06-20", time: "13:00:00Z" },
+  { round: 10, name: "Austrian Grand Prix", country: "Austria", date: "2027-07-04", time: "13:00:00Z" },
+  { round: 11, name: "British Grand Prix", country: "UK", date: "2027-07-18", time: "14:00:00Z" },
+  { round: 12, name: "Belgian Grand Prix", country: "Belgium", date: "2027-08-01", time: "13:00:00Z" },
+  { round: 13, name: "Hungarian Grand Prix", country: "Hungary", date: "2027-08-08", time: "13:00:00Z" },
+  { round: 14, name: "Dutch Grand Prix", country: "Netherlands", date: "2027-08-29", time: "13:00:00Z" },
+  { round: 15, name: "Italian Grand Prix", country: "Italy", date: "2027-09-05", time: "13:00:00Z" },
+  { round: 16, name: "Azerbaijan Grand Prix", country: "Azerbaijan", date: "2027-09-19", time: "11:00:00Z" },
+  { round: 17, name: "Singapore Grand Prix", country: "Singapore", date: "2027-10-03", time: "12:00:00Z" },
+  { round: 18, name: "United States Grand Prix", country: "USA", date: "2027-10-17", time: "19:00:00Z" },
+  { round: 19, name: "Mexico City Grand Prix", country: "Mexico", date: "2027-10-24", time: "20:00:00Z" },
+  { round: 20, name: "Brazilian Grand Prix", country: "Brazil", date: "2027-11-07", time: "17:00:00Z" },
+  { round: 21, name: "Las Vegas Grand Prix", country: "USA", date: "2027-11-20", time: "04:00:00Z" },
+  { round: 22, name: "Qatar Grand Prix", country: "Qatar", date: "2027-11-28", time: "16:00:00Z" },
+  { round: 23, name: "Abu Dhabi Grand Prix", country: "UAE", date: "2027-12-05", time: "13:00:00Z" },
+];
+
+export const CANONICAL_CIRCUIT_MAP: Record<string, { id: string; name: string; city: string }> = {
+  "Australian Grand Prix": { id: "albert_park", name: "Albert Park Circuit", city: "Melbourne" },
+  "Chinese Grand Prix": { id: "shanghai", name: "Shanghai International Circuit", city: "Shanghai" },
+  "Japanese Grand Prix": { id: "suzuka", name: "Suzuka International Racing Course", city: "Suzuka" },
+  "Bahrain Grand Prix": { id: "bahrain", name: "Bahrain International Circuit", city: "Sakhir" },
+  "Saudi Arabian Grand Prix": { id: "jeddah", name: "Jeddah Corniche Circuit", city: "Jeddah" },
+  "Miami Grand Prix": { id: "miami", name: "Miami International Autodrome", city: "Miami" },
+  "Canadian Grand Prix": { id: "villeneuve", name: "Circuit Gilles Villeneuve", city: "Montreal" },
+  "Monaco Grand Prix": { id: "monaco", name: "Circuit de Monaco", city: "Monte Carlo" },
+  "Barcelona Grand Prix": { id: "catalunya", name: "Circuit de Barcelona-Catalunya", city: "Barcelona" },
+  "Spanish Grand Prix": { id: "madring", name: "Madring Circuito de Madrid", city: "Madrid" },
+  "Austrian Grand Prix": { id: "red_bull_ring", name: "Red Bull Ring", city: "Spielberg" },
+  "British Grand Prix": { id: "silverstone", name: "Silverstone Circuit", city: "Silverstone" },
+  "Belgian Grand Prix": { id: "spa", name: "Circuit de Spa-Francorchamps", city: "Spa-Francorchamps" },
+  "Hungarian Grand Prix": { id: "hungaroring", name: "Hungaroring", city: "Budapest" },
+  "Dutch Grand Prix": { id: "zandvoort", name: "Circuit Zandvoort", city: "Zandvoort" },
+  "Italian Grand Prix": { id: "monza", name: "Autodromo Nazionale Monza", city: "Monza" },
+  "Azerbaijan Grand Prix": { id: "baku", name: "Baku City Circuit", city: "Baku" },
+  "Bahrain Grand Prix in Malaysia": { id: "sepang", name: "Sepang International Circuit", city: "Kuala Lumpur" },
+  "Singapore Grand Prix": { id: "marina_bay", name: "Marina Bay Street Circuit", city: "Singapore" },
+  "United States Grand Prix": { id: "americas", name: "Circuit of the Americas", city: "Austin" },
+  "Mexico City Grand Prix": { id: "rodriguez", name: "Autódromo Hermanos Rodríguez", city: "Mexico City" },
+  "Brazilian Grand Prix": { id: "interlagos", name: "Autódromo José Carlos Pace", city: "São Paulo" },
+  "Las Vegas Grand Prix": { id: "vegas", name: "Las Vegas Strip Circuit", city: "Las Vegas" },
+  "Qatar Grand Prix": { id: "losail", name: "Lusail International Circuit", city: "Lusail" },
+  "Abu Dhabi Grand Prix": { id: "yas_marina", name: "Yas Marina Circuit", city: "Abu Dhabi" },
+};
+
 export const DEMO_STANDINGS: StandingsData = {
   drivers: RAW_DRIVERS.map((r) => ({
     position: r[0],
@@ -147,10 +201,11 @@ export const DEMO_STANDINGS: StandingsData = {
   })),
 };
 
-export function getDemoSchedule(): ScheduleRace[] {
+export function getDemoSchedule(year = 2026): ScheduleRace[] {
+  const racesList = year === 2027 ? DEMO_RACES_2027 : DEMO_RACES;
   const now = Date.now();
-  // Sort 1 to 23
-  const sorted = [...DEMO_RACES].sort((a, b) => a.round - b.round);
+  // Sort 1 to N
+  const sorted = [...racesList].sort((a, b) => a.round - b.round);
 
   return sorted.map((r) => {
     const trackTz = COUNTRY_TIMEZONES[r.country] || "UTC";
@@ -159,6 +214,12 @@ export function getDemoSchedule(): ScheduleRace[] {
     const iso = `${r.date}T${r.time || "14:00:00Z"}`;
     const raceTimes = formatSessionTimes(iso, trackTz)!;
     const isCompleted = raceTimes.date.getTime() <= now;
+
+    const circuitMeta = CANONICAL_CIRCUIT_MAP[r.name] || {
+      id: r.name.toLowerCase().replace(/[^a-z0-9]/g, "_"),
+      name: `${r.name.replace(" Grand Prix", "")} Circuit`,
+      city: r.country,
+    };
 
     // Build dummy sessions around race day
     const raceDate = new Date(iso);
@@ -172,9 +233,9 @@ export function getDemoSchedule(): ScheduleRace[] {
       round: r.round,
       name: r.name,
       circuit: {
-        id: r.name.toLowerCase().replace(/[^a-z0-9]/g, "_"),
-        name: `${r.name.replace(" Grand Prix", "")} Circuit`,
-        city: r.country,
+        id: circuitMeta.id,
+        name: circuitMeta.name,
+        city: circuitMeta.city,
         country: r.country,
         timezone: trackTz,
         flag: flag,

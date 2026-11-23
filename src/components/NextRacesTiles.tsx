@@ -43,10 +43,17 @@ export const NextRacesTiles: React.FC<NextRacesTilesProps> = ({
           </div>
           <h2 className="section-heading">NEXT 3 RACES</h2>
         </div>
-        <Link to="/schedule" className="view-all-link">
-          <span>View 2026 Season Schedule</span>
-          <span>→</span>
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+          <Link to="/schedule?season=2026" className="view-all-link">
+            <span>2026 Schedule</span>
+            <span>→</span>
+          </Link>
+          <span style={{ color: "var(--line)" }}>|</span>
+          <Link to="/schedule?season=2027" className="view-all-link" style={{ color: "#f59e0b" }}>
+            <span>2027 Schedule (Provisional)</span>
+            <span>→</span>
+          </Link>
+        </div>
       </div>
 
       {/* 3 Big Tiles Grid */}

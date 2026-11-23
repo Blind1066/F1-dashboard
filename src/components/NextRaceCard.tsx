@@ -4,6 +4,8 @@ import { getTrackPhoto, formatWeekendRange } from "../utils/trackPhotos";
 
 interface NextRaceCardProps {
   race: ScheduleRace | null;
+  season?: number;
+  badgeLabel?: string;
 }
 
 interface TimeRemaining {
@@ -26,7 +28,7 @@ function calculateCountdown(targetDate: Date): TimeRemaining {
   return { days, hours, minutes, seconds, isPast: false };
 }
 
-export const NextRaceCard: React.FC<NextRaceCardProps> = ({ race }) => {
+export const NextRaceCard: React.FC<NextRaceCardProps> = ({ race, season, badgeLabel }) => {
   const [countdown, setCountdown] = useState<TimeRemaining>(() =>
     race ? calculateCountdown(race.raceTimes.date) : { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: false }
   );
@@ -48,7 +50,7 @@ export const NextRaceCard: React.FC<NextRaceCardProps> = ({ race }) => {
         <div className="next-title-row">
           <h2 className="next-title">Season Complete</h2>
         </div>
-        <p className="next-venue">All races for the 2026 season have concluded.</p>
+        <p className="next-venue">All races for the {season || 2026} season have concluded.</p>
       </div>
     );
   }
@@ -56,6 +58,13 @@ export const NextRaceCard: React.FC<NextRaceCardProps> = ({ race }) => {
   const { days, hours, minutes, seconds, isPast } = countdown;
   const trackBg = getTrackPhoto(race.round, race.circuit.id, race.circuit.country);
   const weekendDates = formatWeekendRange(race);
+
+  const defaultBadge = isPast
+    ? "CURRENT GRAND PRIX"
+    : season === 2027 && race.round === 1
+    ? "2027 SEASON OPENER • ROUND 1"
+    : `NEXT RACE • ROUND ${race.round}`;
+  const chipText = badgeLabel || defaultBadge;
 
   return (
     <section className="next-race-card has-track-bg" aria-label="Next Formula 1 Grand Prix">
@@ -72,7 +81,7 @@ export const NextRaceCard: React.FC<NextRaceCardProps> = ({ race }) => {
         <div className="next-badge-row">
           <div className="next-chip">
             <span className="pulse-dot" />
-            <span>{isPast ? "CURRENT GRAND PRIX" : `NEXT RACE • ROUND ${race.round}`}</span>
+            <span>{chipText}</span>
           </div>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
             {!flagFailed && race.circuit.flagUrl ? (

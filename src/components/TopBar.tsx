@@ -22,7 +22,7 @@ export const TopBar: React.FC = () => {
               to="/schedule"
               className={({ isActive }) => (isActive ? "nav-btn active" : "nav-btn")}
             >
-              Race Schedule
+              Upcoming Races
             </NavLink>
             <NavLink
               to="/standings"

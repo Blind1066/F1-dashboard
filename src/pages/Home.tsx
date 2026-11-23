@@ -116,10 +116,13 @@ export const Home: React.FC = () => {
         </div>
 
         <div className="season-links">
-          <Link to="/schedule" className="overview-pill-link">
-            📅 Full Calendar ({totalRaces})
+          <Link to="/schedule?season=2026" className="overview-pill-link">
+            📅 2026 Season ({totalRaces})
           </Link>
-          <Link to="/standings" className="overview-pill-link highlight">
+          <Link to="/schedule?season=2027" className="overview-pill-link highlight">
+            🚀 2027 Season (Provisional)
+          </Link>
+          <Link to="/standings" className="overview-pill-link">
             🏆 Championship Standings
           </Link>
         </div>
